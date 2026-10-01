@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Reportes de ventas | Mirada Salvaje</title>
+  <link rel="icon" href="/assets/img/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/vendor/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/vendor/bootstrap-icons/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="/assets/css/zoo.css">
+</head>
+<body class="cargando">
+
+  <main class="app-main" data-titulo="Reportes de ventas">
+    <div class="pagina-encabezado">
+      <div>
+        <h2>Reportes de ventas</h2>
+        <p>Ingresos por día, ventas por tipo de entrada y uso de promociones. Las ventas anuladas no se cuentan.</p>
+      </div>
+    </div>
+
+    <section class="panel">
+      <form class="filtros" id="formFiltros">
+        <div>
+          <label class="form-label" for="fDesde">Desde</label>
+          <input class="form-control" type="date" id="fDesde" name="desde" required>
+        </div>
+        <div>
+          <label class="form-label" for="fHasta">Hasta</label>
+          <input class="form-control" type="date" id="fHasta" name="hasta" required>
+        </div>
+        <div class="d-flex gap-2 align-items-end" style="flex: 0 0 auto">
+          <button class="btn btn-outline-primary" type="button" id="btnPdf"><i class="bi bi-file-earmark-pdf me-2"></i>PDF</button>
+          <button class="btn btn-outline-primary" type="button" id="btnExcel"><i class="bi bi-file-earmark-spreadsheet me-2"></i>Excel</button>
+        </div>
+      </form>
+
+      <ul class="nav nav-zoo" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tabDiarias" type="button" role="tab" data-reporte="diarias">Ventas por día</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tabTipos" type="button" role="tab" data-reporte="tipos">Por tipo de entrada</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tabPromos" type="button" role="tab" data-reporte="promociones">Promociones</button>
+        </li>
+      </ul>
+
+      <div class="tab-content">
+        <div class="tab-pane fade show active table-responsive" id="tabDiarias" role="tabpanel">
+          <table class="table tabla-zoo"><thead><tr id="encDiarias"></tr></thead><tbody id="tablaDiarias"></tbody></table>
+        </div>
+        <div class="tab-pane fade table-responsive" id="tabTipos" role="tabpanel">
+          <table class="table tabla-zoo"><thead><tr id="encTipos"></tr></thead><tbody id="tablaTipos"></tbody></table>
+        </div>
+        <div class="tab-pane fade table-responsive" id="tabPromos" role="tabpanel">
+          <table class="table tabla-zoo"><thead><tr id="encPromos"></tr></thead><tbody id="tablaPromos"></tbody></table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js" defer></script>
+  <script src="/vendor/jspdf/jspdf.umd.min.js" defer></script>
+  <script src="/vendor/jspdf-autotable/jspdf.plugin.autotable.min.js" defer></script>
+  <script src="/vendor/exceljs/exceljs.min.js" defer></script>
+  <script src="/assets/js/core/api.js" defer></script>
+  <script src="/assets/js/core/ui.js" defer></script>
+  <script src="/assets/js/core/etiquetas.js" defer></script>
+  <script src="/assets/js/core/reportes.js" defer></script>
+  <script src="/assets/js/core/layout.js" defer></script>
+  <script src="/assets/js/modulos/entradas/etiquetas.js" defer></script>
+  <script src="/assets/js/modulos/entradas/reportes.js" defer></script>
+</body>
+</html>

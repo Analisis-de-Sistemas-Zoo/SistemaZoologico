@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Promociones | Mirada Salvaje</title>
+  <link rel="icon" href="/assets/img/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/vendor/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/vendor/bootstrap-icons/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="/assets/css/zoo.css">
+</head>
+<body class="cargando">
+
+  <main class="app-main" data-titulo="Promociones">
+    <div class="pagina-encabezado">
+      <div>
+        <h2>Promociones</h2>
+        <p>Descuentos por fechas, por tipo de entrada o por cantidad. Las publicadas se muestran en el portal; las que tienen cupón solo se aplican si el cliente lo escribe.</p>
+      </div>
+      <button class="btn btn-primary" type="button" id="btnNuevo"><i class="bi bi-plus-lg me-2"></i>Nueva promoción</button>
+    </div>
+
+    <section class="panel">
+      <form class="filtros" id="formFiltros">
+        <div>
+          <label class="form-label" for="fBuscar">Buscar</label>
+          <input class="form-control" id="fBuscar" name="buscar" placeholder="Nombre o cupón">
+        </div>
+        <div>
+          <label class="form-label" for="fVigencia">Vigencia</label>
+          <select class="form-select" id="fVigencia" name="vigencia"></select>
+        </div>
+      </form>
+      <div class="table-responsive">
+        <table class="table table-hover tabla-zoo">
+          <thead>
+            <tr>
+              <th>Promoción</th>
+              <th class="text-end">Descuento</th>
+              <th>Aplica a</th>
+              <th>Cupón</th>
+              <th>Periodo</th>
+              <th>Vigencia</th>
+              <th class="text-end">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tabla"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal fade" id="modalEditar" tabindex="-1" aria-labelledby="tituloModal" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <form class="modal-content" id="formEditar" novalidate>
+        <div class="modal-header">
+          <h5 class="modal-title" id="tituloModal">Nueva promoción</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <div class="alert alert-danger d-none" data-error-general role="alert"></div>
+          <div class="row g-3">
+            <div class="col-md-8">
+              <label class="form-label" for="pNombre">Nombre</label>
+              <input class="form-control" id="pNombre" name="nombre" maxlength="100" required>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label" for="pDescuento">Descuento</label>
+              <div class="input-group">
+                <input class="form-control" id="pDescuento" name="descuento_porcentaje" type="number" min="0.01" max="100" step="0.01" required>
+                <span class="input-group-text">%</span>
+              </div>
+            </div>
+            <div class="col-12">
+              <label class="form-label" for="pDescripcion">Descripción para el público</label>
+              <input class="form-control" id="pDescripcion" name="descripcion" maxlength="255">
+            </div>
+            <div class="col-md-5">
+              <label class="form-label" for="pTipo">Aplica a</label>
+              <select class="form-select" id="pTipo" name="tipo_entrada_id"></select>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label" for="pMinima">Desde (entradas)</label>
+              <input class="form-control" id="pMinima" name="cantidad_minima" type="number" min="1" max="50" step="1" value="1" required>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label" for="pCodigo">Cupón <span class="text-secondary fw-normal">(opcional)</span></label>
+              <input class="form-control text-uppercase" id="pCodigo" name="codigo" maxlength="20" placeholder="Ej. FERIA2026">
+            </div>
+            <div class="col-sm-6">
+              <label class="form-label" for="pInicio">Desde</label>
+              <input class="form-control" id="pInicio" name="fecha_inicio" type="date" required>
+            </div>
+            <div class="col-sm-6">
+              <label class="form-label" for="pFin">Hasta</label>
+              <input class="form-control" id="pFin" name="fecha_fin" type="date" required>
+            </div>
+            <div class="col-12">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" role="switch" id="pPublicada" name="publicada" checked>
+                <label class="form-check-label" for="pPublicada">Mostrar en el portal público</label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Guardar promoción</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js" defer></script>
+  <script src="/assets/js/core/api.js" defer></script>
+  <script src="/assets/js/core/ui.js" defer></script>
+  <script src="/assets/js/core/etiquetas.js" defer></script>
+  <script src="/assets/js/core/crud.js" defer></script>
+  <script src="/assets/js/core/layout.js" defer></script>
+  <script src="/assets/js/modulos/entradas/etiquetas.js" defer></script>
+  <script src="/assets/js/modulos/entradas/promociones.js" defer></script>
+</body>
+</html>
