@@ -234,3 +234,4 @@ Cómo trabajar:
 4. Mientras una función no esté lista, la pantalla muestra un aviso "En construcción" en lugar de fallar.
 5. **No cambies los nombres de los campos** que define el contrato: la interfaz los espera así. Si necesitas un cambio, avísale a Mijeli.
 6. Tienes un ejemplo completo en tu propio módulo para copiar el estilo (Limpieza: insumos; Clínico: inventario; Entradas: tipos de entrada y promociones).
+7. El módulo de Alimentación ([`docs/api/alimentacion.md`](docs/api/alimentacion.md)) está programado completo: sirve de referencia para transacciones, bloqueo de filas (`FOR UPDATE`) y validaciones en el controlador.

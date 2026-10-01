@@ -1017,3 +1017,91 @@ a.resumen-item:hover {
 /* Últimos ingresos */
 .lista-ingresos li { display: flex; justify-content: space-between; gap: 0.75rem; padding: 0.5rem 0; border-top: 1px solid var(--zoo-linea); font-size: 0.9rem; }
 .lista-ingresos li:first-child { border-top: 0; }
+
+/* ================================================================
+   Alimentación: días de la semana
+   ================================================================ */
+.dias-semana { display: inline-flex; gap: 0.2rem; }
+.dias-semana span {
+  display: inline-grid;
+  place-items: center;
+  width: 1.45rem;
+  height: 1.45rem;
+  border-radius: 50%;
+  font-size: 0.72rem;
+  font-weight: 650;
+  color: #9aa69e;
+  background: #eef1ee;
+}
+.dias-semana span.si { color: #fff; background: var(--zoo-hoja); }
+
+.selector-dias { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.selector-dias input { position: absolute; opacity: 0; pointer-events: none; }
+.selector-dias label {
+  display: inline-grid;
+  place-items: center;
+  min-width: 3rem;
+  padding: 0.45rem 0.6rem;
+  border: 1px solid var(--zoo-linea);
+  border-radius: var(--zoo-radio);
+  background: var(--zoo-blanco);
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+}
+.selector-dias input:checked + label { background: var(--zoo-hoja); border-color: var(--zoo-hoja); color: #fff; }
+.selector-dias input:focus-visible + label { outline: 2px solid var(--zoo-papaya); outline-offset: 2px; }
+
+/* Tarjetas de "qué come cada animal" */
+.dieta-animales { display: grid; grid-template-columns: repeat(auto-fill, minmax(19rem, 1fr)); gap: 1rem; }
+.dieta-animal {
+  border: 1px solid var(--zoo-linea);
+  border-radius: var(--zoo-radio-grande);
+  padding: 1rem 1.1rem;
+  background: var(--zoo-blanco);
+}
+.dieta-animal.sin-dieta { border-color: var(--zoo-papaya); background: #fffaf2; }
+.dieta-animal h3 { font-size: 1.05rem; margin: 0; }
+.dieta-animal ul { list-style: none; padding: 0; margin: 0.75rem 0 0; }
+.dieta-animal li { padding: 0.5rem 0; border-top: 1px solid var(--zoo-linea); }
+.grupo-jaula { margin: 1.25rem 0 0.6rem; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--zoo-tinta-suave); }
+.grupo-jaula:first-child { margin-top: 0; }
+
+/* Raciones del día */
+.turno {
+  margin-bottom: 1rem;
+  background: var(--zoo-blanco);
+  border: 1px solid var(--zoo-linea);
+  border-left: 4px solid var(--zoo-linea);
+  border-radius: var(--zoo-radio-grande);
+  overflow: hidden;
+}
+.turno.completo { border-left-color: var(--zoo-hoja); }
+.turno.parcial { border-left-color: #3b7cc4; }
+.turno.atrasado, .turno.no_registrado { border-left-color: #c0392b; }
+.turno-encabezado {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  padding: 0.9rem 1.1rem;
+  border-bottom: 1px solid var(--zoo-linea);
+  background: #fafcf9;
+}
+.turno-hora { font-family: var(--zoo-fuente-titulo); font-size: 1.6rem; font-weight: 700; color: var(--zoo-selva); line-height: 1; }
+.turno-animal { display: grid; grid-template-columns: minmax(9rem, 13rem) 1fr; gap: 0.5rem 1rem; padding: 0.8rem 1.1rem; border-top: 1px solid var(--zoo-linea); }
+.turno-animal:first-of-type { border-top: 0; }
+.racion { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0.5rem 1rem; padding: 0.35rem 0; }
+.racion + .racion { border-top: 1px dashed var(--zoo-linea); }
+.racion-registro { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem 0.6rem; justify-content: flex-end; }
+@media (max-width: 575.98px) { .turno-animal { grid-template-columns: 1fr; } }
+
+.selector-consumo { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
+.selector-consumo input { position: absolute; opacity: 0; pointer-events: none; }
+.selector-consumo label {
+  display: flex; flex-direction: column; align-items: center; gap: 0.25rem;
+  padding: 0.6rem; border: 1px solid var(--zoo-linea); border-radius: var(--zoo-radio); cursor: pointer; font-weight: 600; background: var(--zoo-blanco);
+}
+.selector-consumo label .bi { font-size: 1.4rem; }
+.selector-consumo input:checked + label { border-color: var(--zoo-hoja); background: var(--zoo-brote); color: var(--zoo-selva); }
+.selector-consumo input:focus-visible + label { outline: 2px solid var(--zoo-papaya); outline-offset: 2px; }

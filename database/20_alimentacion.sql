@@ -233,7 +233,7 @@ INSERT INTO alimento (id, nombre, categoria, unidad_medida, stock_minimo, dias_a
 INSERT INTO lote_alimento
   (id, alimento_id, proveedor_id, numero_lote, numero_factura, fecha_ingreso, fecha_vencimiento,
    cantidad_inicial, cantidad_disponible, costo_unitario, usuario_id, observaciones) VALUES
-  ( 1,  1, 1, 'CR-001', 'F-1021', CURDATE() - INTERVAL  3 DAY, CURDATE() + INTERVAL   4 DAY,  72.000,  35.000, 38.50, 5, NULL),
+  ( 1,  1, 1, 'CR-001', 'F-1021', CURDATE() - INTERVAL  3 DAY, CURDATE() + INTERVAL   4 DAY,  64.000,  35.000, 38.50, 5, NULL),
   ( 2,  2, 1, 'PO-001', 'F-1022', CURDATE() - INTERVAL  2 DAY, CURDATE() + INTERVAL   2 DAY,  60.000,  60.000, 22.00, 5, NULL),
   ( 3,  3, 3, 'PE-001', 'B-0456', CURDATE() - INTERVAL  6 DAY, CURDATE() - INTERVAL   1 DAY,   3.000,   3.000, 30.00, 5, 'Sobrante sin usar'),
   ( 4,  3, 3, 'PE-002', 'B-0471', CURDATE() - INTERVAL  1 DAY, CURDATE() + INTERVAL   2 DAY,  15.000,  15.000, 30.00, 5, NULL),
@@ -245,7 +245,7 @@ INSERT INTO lote_alimento
   (10,  8, 5, 'SE-001', 'EP-910', CURDATE() - INTERVAL 30 DAY, CURDATE() + INTERVAL 150 DAY,  25.000,  25.000, 12.00, 5, NULL),
   (11,  9, 6, 'RA-001', 'BC-118', CURDATE() - INTERVAL 10 DAY, CURDATE() + INTERVAL  60 DAY,  60.000,  60.000,  9.00, 5, NULL),
   (12, 10, 5, 'SU-001', 'EP-887', CURDATE() - INTERVAL 40 DAY, CURDATE() + INTERVAL 200 DAY,   1.580,   1.500, 95.00, 5, NULL),
-  (13, 11, 4, 'RM-001', 'FS-350', CURDATE() - INTERVAL  1 DAY, CURDATE() + INTERVAL   1 DAY,  80.000,  80.000,  1.50, 5, 'Cortado el día de ingreso');
+  (13, 11, 4, 'RM-001', 'FS-350', CURDATE() - INTERVAL  2 DAY, CURDATE() + INTERVAL   1 DAY,  80.000,  80.000,  1.50, 5, 'Cortado el día de ingreso');
 
 -- Dietas: generales por especie, y una particular para Simba (león en tratamiento)
 INSERT INTO dieta
@@ -271,6 +271,7 @@ INSERT INTO dieta
   (18, 11, NULL,  7,  1.000, 1, NULL,                                         NULL, 9, CURDATE() - INTERVAL 60 DAY),
   (19, 11, NULL, 11,  2.000, 1, NULL,                                         NULL, 9, CURDATE() - INTERVAL 60 DAY);
 
+-- Los horarios empezaron a usarse hace dos días (el sistema no programa raciones antes de que exista el horario)
 INSERT INTO horario_alimentacion (id, area_id, hora, dias, cuidador_id, observaciones) VALUES
   ( 1, 1, '16:00', 'lun,mar,mie,jue,vie,sab,dom', 4,  NULL),
   ( 2, 2, '08:00', 'lun,mar,mie,jue,vie,sab,dom', 4,  NULL),
@@ -285,40 +286,64 @@ INSERT INTO horario_alimentacion (id, area_id, hora, dias, cuidador_id, observac
   (11, 8, '08:30', 'lun,mar,mie,jue,vie,sab,dom', 4,  NULL),
   (12, 8, '15:00', 'lun,mar,mie,jue,vie,sab,dom', 4,  NULL);
 
--- Raciones de los dos días anteriores
+UPDATE horario_alimentacion SET creado_en = TIMESTAMP(CURDATE() - INTERVAL 2 DAY, '06:00'), actualizado_en = creado_en;
+
+-- Raciones de los dos días anteriores, generadas con las mismas reglas que usa el sistema:
+--   * horarios activos de cada jaula que tocan ese día, numerados por hora (1.°, 2.°...)
+--   * dietas de cada animal (las propias reemplazan a las de su especie)
+--   * una dieta de N raciones al día se sirve en los primeros N horarios
+-- Para que los reportes tengan algo que mostrar, algunos turnos quedan sin registrar
+-- y algunas raciones se comieron solo en parte.
 INSERT INTO registro_alimentacion
-  (id, dieta_id, animal_id, horario_id, usuario_id, fecha, hora, cantidad_suministrada, consumo, observaciones) VALUES
-  ( 1,  1,  1, 1,  4, CURDATE() - INTERVAL 2 DAY, '16:05',  4.000, 'completo', NULL),
-  ( 2,  2,  1, 1,  4, CURDATE() - INTERVAL 2 DAY, '16:05',  0.020, 'completo', NULL),
-  ( 3,  1,  2, 1,  4, CURDATE() - INTERVAL 2 DAY, '16:07',  4.000, 'completo', NULL),
-  ( 4,  2,  2, 1,  4, CURDATE() - INTERVAL 2 DAY, '16:07',  0.020, 'completo', NULL),
-  ( 5, 11,  9, 7, 10, CURDATE() - INTERVAL 2 DAY, '16:35',  4.500, 'completo', NULL),
-  ( 6, 10, 10, 7, 10, CURDATE() - INTERVAL 2 DAY, '16:36',  6.000, 'completo', NULL),
-  ( 7,  1,  1, 1,  4, CURDATE() - INTERVAL 1 DAY, '16:02',  4.000, 'completo', NULL),
-  ( 8,  2,  1, 1,  4, CURDATE() - INTERVAL 1 DAY, '16:02',  0.020, 'completo', NULL),
-  ( 9,  1,  2, 1,  4, CURDATE() - INTERVAL 1 DAY, '16:04',  4.000, 'parcial',  'Dejó cerca de medio kilo'),
-  (10,  2,  2, 1,  4, CURDATE() - INTERVAL 1 DAY, '16:04',  0.020, 'completo', NULL),
-  (11, 11,  9, 7, 10, CURDATE() - INTERVAL 1 DAY, '16:33',  4.500, 'parcial',  'Sigue con poco apetito'),
-  (12, 10, 10, 7, 10, CURDATE() - INTERVAL 1 DAY, '16:34',  6.000, 'completo', NULL),
-  (13,  3,  3, 2,  4, CURDATE() - INTERVAL 1 DAY, '08:03',  1.200, 'completo', NULL),
-  (14,  4,  3, 2,  4, CURDATE() - INTERVAL 1 DAY, '08:03',  0.300, 'completo', NULL),
-  (15,  3,  4, 2,  4, CURDATE() - INTERVAL 1 DAY, '08:05',  1.200, 'parcial',  'Comió la mitad de la fruta'),
-  (16,  4,  4, 2,  4, CURDATE() - INTERVAL 1 DAY, '08:05',  0.300, 'completo', NULL),
-  (17,  6,  6, 5, 10, CURDATE() - INTERVAL 1 DAY, '07:35', 12.000, 'completo', NULL),
-  (18,  6,  7, 5, 10, CURDATE() - INTERVAL 1 DAY, '07:36', 12.000, 'completo', NULL),
-  (19,  8,  8, 5, 10, CURDATE() - INTERVAL 1 DAY, '07:38',  6.000, 'completo', NULL),
-  (20,  9,  8, 5, 10, CURDATE() - INTERVAL 1 DAY, '07:38',  1.500, 'completo', NULL);
+  (dieta_id, animal_id, horario_id, usuario_id, fecha, hora, cantidad_suministrada, consumo, observaciones)
+WITH RECURSIVE dias AS (
+  SELECT CURDATE() - INTERVAL 2 DAY AS fecha
+  UNION ALL
+  SELECT fecha + INTERVAL 1 DAY FROM dias WHERE fecha < CURDATE() - INTERVAL 1 DAY
+),
+turnos AS (
+  SELECT d.fecha, h.id AS horario_id, h.area_id, h.hora, h.cuidador_id,
+         ROW_NUMBER() OVER (PARTITION BY d.fecha, h.area_id ORDER BY h.hora) AS numero
+    FROM dias d
+    JOIN horario_alimentacion h
+      ON h.activo = 1 AND FIND_IN_SET(ELT(WEEKDAY(d.fecha) + 1, 'lun', 'mar', 'mie', 'jue', 'vie', 'sab', 'dom'), h.dias) > 0
+),
+comidas AS (
+  SELECT an.id AS animal_id, an.area_id, di.id AS dieta_id, di.frecuencia_diaria, di.cantidad_racion
+    FROM animal an
+    JOIN dieta di ON di.activa = 1
+                 AND (di.animal_id = an.id
+                      OR (di.especie_id = an.especie_id
+                          AND NOT EXISTS (SELECT 1 FROM dieta p WHERE p.animal_id = an.id AND p.activa = 1)))
+   WHERE an.estado = 'activo'
+)
+SELECT c.dieta_id, c.animal_id, t.horario_id, t.cuidador_id, t.fecha,
+       ADDTIME(t.hora, SEC_TO_TIME(120 + (c.animal_id % 6) * 60)),
+       c.cantidad_racion,
+       IF((c.animal_id * 7 + DAYOFMONTH(t.fecha) + t.numero) % 9 = 0, 'parcial', 'completo'),
+       NULL
+  FROM turnos t
+  JOIN comidas c ON c.area_id = t.area_id AND c.frecuencia_diaria >= t.numero
+ WHERE (t.horario_id * 3 + DAYOFMONTH(t.fecha)) % 11 <> 0;   -- unos pocos turnos quedaron sin registrar
+
+-- Simba sigue con poco apetito por su tratamiento
+UPDATE registro_alimentacion SET consumo = 'parcial', observaciones = 'Sigue con poco apetito'
+ WHERE animal_id = 9 AND fecha = CURDATE() - INTERVAL 1 DAY;
+UPDATE registro_alimentacion SET observaciones = 'Dejó parte de la ración'
+ WHERE consumo = 'parcial' AND observaciones IS NULL;
 
 -- Movimientos: entrada de cada lote ...
 INSERT INTO movimiento_alimento (lote_id, tipo, cantidad, registro_id, motivo, usuario_id, fecha)
 SELECT id, 'entrada', cantidad_inicial, NULL, CONCAT('Compra, factura ', numero_factura), usuario_id, TIMESTAMP(fecha_ingreso, '09:00')
   FROM lote_alimento;
 
--- ... consumo de cada ración (todas salieron del lote más próximo a vencer de su alimento) ...
+-- ... consumo de cada ración, del lote que estaba disponible ese día y vencía primero (FEFO) ...
 INSERT INTO movimiento_alimento (lote_id, tipo, cantidad, registro_id, motivo, usuario_id, fecha)
 SELECT (SELECT l.id FROM lote_alimento l
           WHERE l.alimento_id = d.alimento_id
-          ORDER BY l.fecha_vencimiento, l.id LIMIT 1),
+          ORDER BY (l.fecha_ingreso <= r.fecha AND (l.fecha_vencimiento IS NULL OR l.fecha_vencimiento >= r.fecha)) DESC,
+                   l.fecha_vencimiento IS NULL, l.fecha_vencimiento, l.id
+          LIMIT 1),
        'consumo', r.cantidad_suministrada, r.id, NULL, r.usuario_id, TIMESTAMP(r.fecha, r.hora)
   FROM registro_alimentacion r
   JOIN dieta d ON d.id = r.dieta_id;
@@ -326,3 +351,8 @@ SELECT (SELECT l.id FROM lote_alimento l
 -- ... y una merma
 INSERT INTO movimiento_alimento (lote_id, tipo, cantidad, registro_id, motivo, usuario_id, fecha) VALUES
   (5, 'merma', 1.000, NULL, 'Fruta en mal estado al abrir las cajas', 5, TIMESTAMP(CURDATE() - INTERVAL 1 DAY, '10:15'));
+
+-- La existencia de cada lote cuadra con sus movimientos
+UPDATE lote_alimento l
+   SET l.cantidad_disponible = l.cantidad_inicial - COALESCE(
+         (SELECT SUM(m.cantidad) FROM movimiento_alimento m WHERE m.lote_id = l.id AND m.tipo IN ('consumo', 'merma')), 0);

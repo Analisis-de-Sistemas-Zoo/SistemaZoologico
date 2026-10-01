@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Entradas y lotes | Mirada Salvaje</title>
+  <link rel="icon" href="/assets/img/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/vendor/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/vendor/bootstrap-icons/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="/assets/css/zoo.css">
+</head>
+<body class="cargando">
+
+  <main class="app-main" data-titulo="Entradas y lotes">
+    <div class="pagina-encabezado">
+      <div>
+        <h2>Entradas y lotes</h2>
+        <p>Cada compra de alimento entra como un lote con su vencimiento. Aquí se registran las entradas y las mermas (producto dañado o vencido).</p>
+      </div>
+      <button class="btn btn-primary" type="button" id="btnNuevo"><i class="bi bi-plus-lg me-2"></i>Registrar entrada</button>
+    </div>
+
+    <section class="panel">
+      <form class="filtros" id="formFiltros">
+        <div>
+          <label class="form-label" for="fBuscar">Buscar</label>
+          <input class="form-control" id="fBuscar" name="buscar" placeholder="Lote, factura o alimento">
+        </div>
+        <div>
+          <label class="form-label" for="fAlimento">Alimento</label>
+          <select class="form-select" id="fAlimento" name="alimento_id"></select>
+        </div>
+        <div>
+          <label class="form-label" for="fProveedor">Proveedor</label>
+          <select class="form-select" id="fProveedor" name="proveedor_id"></select>
+        </div>
+        <div>
+          <label class="form-label" for="fEstado">Estado</label>
+          <select class="form-select" id="fEstado" name="estado"></select>
+        </div>
+        <div>
+          <label class="form-label" for="fDesde">Ingreso</label>
+          <select class="form-select" id="fDesde" name="desde"></select>
+        </div>
+      </form>
+      <div class="table-responsive">
+        <table class="table table-hover tabla-zoo">
+          <thead>
+            <tr>
+              <th>Lote</th>
+              <th>Alimento y proveedor</th>
+              <th>Vencimiento</th>
+              <th>Disponible</th>
+              <th class="text-end">Costo</th>
+              <th>Estado</th>
+              <th class="text-end">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tabla"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <!-- Entrada / corrección de lote -->
+  <div class="modal fade" id="modalEditar" tabindex="-1" aria-labelledby="tituloModal" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <form class="modal-content" id="formEditar" novalidate>
+        <div class="modal-header">
+          <h5 class="modal-title" id="tituloModal">Registrar entrada</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <div class="alert alert-danger d-none" data-error-general role="alert"></div>
+          <div class="alert alert-info small py-2 d-none" id="avisoEdicion"><i class="bi bi-info-circle me-1"></i>Solo se corrigen los datos del documento. El alimento y las cantidades no cambian: para sacar producto usa una merma.</div>
+          <div class="row g-3">
+            <div class="col-md-8">
+              <label class="form-label" for="lAlimento">Alimento</label>
+              <select class="form-select" id="lAlimento" name="alimento_id" required></select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label" for="lCantidad">Cantidad recibida</label>
+              <div class="input-group">
+                <input class="form-control" id="lCantidad" name="cantidad" type="number" min="0.001" step="0.001" required>
+                <span class="input-group-text" id="lUnidad">kg</span>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label" for="lProveedor">Proveedor</label>
+              <select class="form-select" id="lProveedor" name="proveedor_id" required></select>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label" for="lLote">Número de lote</label>
+              <input class="form-control text-uppercase" id="lLote" name="numero_lote" maxlength="40" required>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label" for="lFactura">Factura</label>
+              <input class="form-control" id="lFactura" name="numero_factura" maxlength="40">
+            </div>
+            <div class="col-sm-4">
+              <label class="form-label" for="lIngreso">Fecha de ingreso</label>
+              <input class="form-control" id="lIngreso" name="fecha_ingreso" type="date" required>
+            </div>
+            <div class="col-sm-4">
+              <label class="form-label" for="lVence">Vencimiento</label>
+              <input class="form-control" id="lVence" name="fecha_vencimiento" type="date">
+              <div class="form-text">Déjalo vacío si no vence.</div>
+            </div>
+            <div class="col-sm-4">
+              <label class="form-label" for="lCosto">Costo por unidad</label>
+              <div class="input-group">
+                <span class="input-group-text">Q</span>
+                <input class="form-control" id="lCosto" name="costo_unitario" type="number" min="0" step="0.01">
+              </div>
+              <div class="form-text" id="lTotal"></div>
+            </div>
+            <div class="col-12">
+              <label class="form-label" for="lObs">Observaciones</label>
+              <input class="form-control" id="lObs" name="observaciones" maxlength="255">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Merma -->
+  <div class="modal fade" id="modalMerma" tabindex="-1" aria-labelledby="tituloMerma" aria-hidden="true">
+    <div class="modal-dialog">
+      <form class="modal-content" id="formMerma" novalidate>
+        <div class="modal-header">
+          <h5 class="modal-title" id="tituloMerma">Registrar merma</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <div class="alert alert-danger d-none" data-error-general role="alert"></div>
+          <p class="text-secondary" id="infoMerma"></p>
+          <div class="mb-3">
+            <label class="form-label" for="mCantidad">Cantidad que se pierde</label>
+            <div class="input-group">
+              <input class="form-control" id="mCantidad" name="cantidad" type="number" min="0.001" step="0.001" required>
+              <span class="input-group-text" id="mUnidad"></span>
+              <button class="btn btn-outline-secondary" type="button" id="btnTodo">Todo</button>
+            </div>
+          </div>
+          <label class="form-label" for="mMotivo">Motivo</label>
+          <input class="form-control" id="mMotivo" name="motivo" maxlength="255" placeholder="Ej. Producto en mal estado, vencido" required>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-danger">Registrar merma</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Historial -->
+  <div class="modal fade" id="modalHistorial" tabindex="-1" aria-labelledby="tituloHistorial" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="tituloHistorial">Historial</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body p-0">
+          <div class="px-3 pt-3" id="infoHistorial"></div>
+          <div class="table-responsive">
+            <table class="table tabla-zoo mb-0">
+              <thead><tr><th>Fecha</th><th>Movimiento</th><th class="text-end">Cantidad</th><th>Detalle</th><th>Registró</th></tr></thead>
+              <tbody id="tablaHistorial"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js" defer></script>
+  <script src="/assets/js/core/api.js" defer></script>
+  <script src="/assets/js/core/ui.js" defer></script>
+  <script src="/assets/js/core/etiquetas.js" defer></script>
+  <script src="/assets/js/core/crud.js" defer></script>
+  <script src="/assets/js/core/layout.js" defer></script>
+  <script src="/assets/js/modulos/alimentacion/etiquetas.js" defer></script>
+  <script src="/assets/js/modulos/alimentacion/comun.js" defer></script>
+  <script src="/assets/js/modulos/alimentacion/lotes.js" defer></script>
+</body>
+</html>
