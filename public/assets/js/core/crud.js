@@ -84,7 +84,8 @@
         Zoo.ui.tabla(tbody, items, (item) => cfg.fila(item, cfg.puedeEditar), { vacio: cfg.vacio, icono: cfg.icono });
         cfg.alCargar?.(items);
       } catch (err) {
-        Zoo.ui.error(err);
+        if (err.pendiente) Zoo.ui.tablaPendiente(tbody, err);
+        else Zoo.ui.error(err);
       }
     }
 

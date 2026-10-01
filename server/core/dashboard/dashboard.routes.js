@@ -45,7 +45,8 @@ router.get('/resumen', async (req, res) => {
       const propias = await modulo.resumenDashboard(usuario, puede);
       tarjetas.push(...(propias || []).map((t) => ({ ...t, modulo: modulo.clave })));
     } catch (error) {
-      console.error(`[dashboard] Error en el resumen de "${modulo.clave}":`, error.message);
+      // 501 = resumen del módulo aún no implementado; no es un error.
+      if (error.estado !== 501) console.error(`[dashboard] Error en el resumen de "${modulo.clave}":`, error.message);
     }
   }
   return ok(res, { tarjetas });

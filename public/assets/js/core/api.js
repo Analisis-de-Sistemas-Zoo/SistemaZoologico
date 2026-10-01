@@ -19,6 +19,8 @@
       super(mensaje);
       this.estado = estado;
       this.errores = errores || [];
+      // 501: la interfaz existe pero el backend de esa función aún no se programa.
+      this.pendiente = estado === 501;
     }
   }
 
