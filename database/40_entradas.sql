@@ -54,14 +54,14 @@ CREATE TABLE promocion (
 CREATE TABLE cliente (
   id         INT UNSIGNED  NOT NULL AUTO_INCREMENT,
   nombre     VARCHAR(120)  NOT NULL,
-  correo     VARCHAR(120)  NOT NULL,
+  correo     VARCHAR(120)  NULL COMMENT 'Obligatorio en compras web; opcional en taquilla',
   telefono   VARCHAR(20)   NULL,
   nit        VARCHAR(20)   NOT NULL DEFAULT 'CF',
   creado_en  DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   KEY idx_cliente_correo (correo)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
-  COMMENT='Datos de contacto de quien compra en línea. No tiene usuario ni contraseña';
+  COMMENT='Datos de quien compra (en línea o en taquilla). No tiene usuario ni contraseña';
 
 CREATE TABLE compra (
   id                INT UNSIGNED  NOT NULL AUTO_INCREMENT,

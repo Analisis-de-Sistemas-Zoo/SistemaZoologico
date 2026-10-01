@@ -416,12 +416,12 @@ Table promocion {
 Table cliente {
   id "int unsigned" [pk, increment]
   nombre "varchar(120)" [not null]
-  correo "varchar(120)" [not null]
+  correo "varchar(120)" [note: 'Obligatorio en compras web; opcional en taquilla']
   telefono "varchar(20)"
   nit "varchar(20)" [not null, default: 'CF']
   creado_en datetime [not null, default: `CURRENT_TIMESTAMP`]
 
-  Note: 'Datos de contacto de quien compra en línea. No tiene usuario ni contraseña'
+  Note: 'Datos de quien compra (en línea o en taquilla). No tiene usuario ni contraseña'
 }
 
 Table compra {
