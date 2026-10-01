@@ -1,0 +1,39 @@
+{
+  "name": "zoologico-mirada-salvaje",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Sistema de control del zoológico Mirada Salvaje — Análisis de Sistemas II, UMG Campus Jutiapa",
+  "main": "server/app.js",
+  "scripts": {
+    "start": "node server/app.js",
+    "dev": "node --watch server/app.js",
+    "db:up": "docker compose up -d",
+    "db:down": "docker compose down",
+    "db:reset": "docker compose down -v && docker compose up -d",
+    "db:logs": "docker compose logs -f mysql",
+    "hash": "node server/utils/generar-hash.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@fontsource-variable/bricolage-grotesque": "^5.3.0",
+    "@fontsource-variable/public-sans": "^5.3.0",
+    "bcryptjs": "^2.4.3",
+    "bootstrap": "^5.3.3",
+    "bootstrap-icons": "^1.11.3",
+    "dotenv": "^16.4.5",
+    "exceljs": "^4.4.0",
+    "express": "^5.1.0",
+    "express-rate-limit": "^7.5.0",
+    "express-session": "^1.18.1",
+    "express-validator": "^7.2.1",
+    "helmet": "^8.1.0",
+    "jspdf": "^4.2.1",
+    "jspdf-autotable": "^5.0.8",
+    "mysql2": "^3.14.0"
+  },
+  "overrides": {
+    "uuid": "^11.1.1"
+  }
+}

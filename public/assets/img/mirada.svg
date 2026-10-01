@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 520" role="img" aria-label="Unos ojos de felino observan entre el follaje">
+  <defs>
+    <path id="hoja" d="M0 200C-58 146-54 52 0 0c54 52 58 146 0 200z"/>
+    <path id="nervio" d="M0 196V8" fill="none" stroke-width="3" stroke-linecap="round"/>
+    <radialGradient id="iris" cx="50%" cy="45%" r="55%">
+      <stop offset="0" stop-color="#F7C76B"/>
+      <stop offset="0.6" stop-color="#E39A2D"/>
+      <stop offset="1" stop-color="#B66E12"/>
+    </radialGradient>
+    <radialGradient id="brillo" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#E39A2D" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#E39A2D" stop-opacity="0"/>
+    </radialGradient>
+    <g id="ojo">
+      <path d="M-62 0c28-34 96-34 124 0-28 34-96 34-124 0z" fill="#10231a"/>
+      <circle r="27" fill="url(#iris)"/>
+      <ellipse rx="6.5" ry="23" fill="#0c1a13"/>
+      <circle cx="9" cy="-10" r="5" fill="#FFF6E6"/>
+    </g>
+  </defs>
+
+  <!-- Follaje de fondo -->
+  <g fill="#244633">
+    <use href="#hoja" transform="translate(90 330) rotate(-48) scale(1.15)"/>
+    <use href="#hoja" transform="translate(520 340) rotate(52) scale(1.2)"/>
+    <use href="#hoja" transform="translate(300 120) rotate(180) scale(1.05)"/>
+    <use href="#hoja" transform="translate(170 140) rotate(150) scale(0.95)"/>
+    <use href="#hoja" transform="translate(440 150) rotate(-150) scale(0.95)"/>
+  </g>
+  <g fill="#2b5a3e">
+    <use href="#hoja" transform="translate(40 200) rotate(-80) scale(1)"/>
+    <use href="#hoja" transform="translate(570 210) rotate(85) scale(1)"/>
+    <use href="#hoja" transform="translate(230 70) rotate(200) scale(0.8)"/>
+    <use href="#hoja" transform="translate(380 60) rotate(160) scale(0.8)"/>
+  </g>
+
+  <!-- La mirada -->
+  <ellipse cx="300" cy="262" rx="210" ry="90" fill="url(#brillo)"/>
+  <use href="#ojo" transform="translate(222 262) rotate(-6)"/>
+  <use href="#ojo" transform="translate(378 262) rotate(6)"/>
+
+  <!-- Follaje del frente -->
+  <g fill="#2F6B45">
+    <use href="#hoja" transform="translate(150 520) rotate(-25) scale(1.25)"/>
+    <use href="#hoja" transform="translate(455 520) rotate(28) scale(1.25)"/>
+    <use href="#hoja" transform="translate(300 540) rotate(0) scale(1.05)"/>
+  </g>
+  <g stroke="#4f8d63">
+    <use href="#nervio" transform="translate(150 520) rotate(-25) scale(1.25)"/>
+    <use href="#nervio" transform="translate(455 520) rotate(28) scale(1.25)"/>
+    <use href="#nervio" transform="translate(300 540) rotate(0) scale(1.05)"/>
+  </g>
+  <g fill="#3E8556">
+    <use href="#hoja" transform="translate(0 470) rotate(-60) scale(1.05)"/>
+    <use href="#hoja" transform="translate(600 470) rotate(62) scale(1.05)"/>
+  </g>
+  <g fill="#1E3A2B">
+    <use href="#hoja" transform="translate(110 250) rotate(-100) scale(0.75)"/>
+    <use href="#hoja" transform="translate(490 250) rotate(100) scale(0.75)"/>
+  </g>
+</svg>

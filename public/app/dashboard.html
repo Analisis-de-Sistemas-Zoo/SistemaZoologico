@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Inicio | Mirada Salvaje</title>
+  <link rel="icon" href="/assets/img/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/vendor/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/vendor/bootstrap-icons/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="/assets/css/zoo.css">
+</head>
+<body class="cargando">
+
+  <main class="app-main" data-titulo="Inicio">
+    <section class="saludo">
+      <div>
+        <h2 id="saludoTitulo">Hola</h2>
+        <p id="saludoTexto"></p>
+      </div>
+    </section>
+
+    <section aria-labelledby="tituloResumen" class="mb-4">
+      <h2 class="h5 mb-3" id="tituloResumen">Resumen del día</h2>
+      <div class="resumen" id="resumen"></div>
+    </section>
+
+    <section aria-labelledby="tituloAccesos">
+      <h2 class="h5 mb-3" id="tituloAccesos">Tus módulos</h2>
+      <div class="accesos" id="accesos"></div>
+    </section>
+  </main>
+
+  <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js" defer></script>
+  <script src="/assets/js/core/api.js" defer></script>
+  <script src="/assets/js/core/ui.js" defer></script>
+  <script src="/assets/js/core/layout.js" defer></script>
+  <script src="/assets/js/paginas/dashboard.js" defer></script>
+</body>
+</html>

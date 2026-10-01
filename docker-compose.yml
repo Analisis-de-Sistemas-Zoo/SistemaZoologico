@@ -1,0 +1,47 @@
+# Base de datos del proyecto (MySQL 8 + Adminer).
+# Uso:
+#   npm run db:up      -> levanta MySQL y Adminer
+#   npm run db:reset   -> borra la BD y la vuelve a crear desde /database
+#
+# La primera vez que se levanta, MySQL ejecuta en orden alfabético todos los
+# archivos .sql de la carpeta /database. Si cambias un .sql, usa db:reset.
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: zoo_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root_2026}
+      MYSQL_DATABASE: ${DB_NAME:-zoologico_mirada_salvaje}
+      MYSQL_USER: ${DB_USER:-zoo_app}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-zoo_app_2026}
+      TZ: America/Guatemala
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --default-time-zone=-06:00
+    ports:
+      - "${DB_PORT:-3307}:3306"
+    volumes:
+      - zoo_mysql_data:/var/lib/mysql
+      - ./database:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p${MYSQL_ROOT_PASSWORD:-root_2026}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  adminer:
+    image: adminer:latest
+    container_name: zoo_adminer
+    restart: unless-stopped
+    environment:
+      ADMINER_DEFAULT_SERVER: mysql
+    ports:
+      - "8081:8080"
+    depends_on:
+      - mysql
+
+volumes:
+  zoo_mysql_data:

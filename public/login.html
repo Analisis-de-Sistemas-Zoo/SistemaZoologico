@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Acceso del personal | Mirada Salvaje</title>
+  <link rel="icon" href="/assets/img/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/vendor/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/vendor/bootstrap-icons/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="/assets/css/zoo.css">
+  <link rel="stylesheet" href="/assets/css/publico.css">
+</head>
+<body>
+  <div class="login">
+    <section class="login-arte" aria-hidden="true">
+      <a class="portal-marca" href="/" tabindex="-1">
+        <img src="/assets/img/logo.svg" alt="">
+        Mirada Salvaje
+      </a>
+      <h2>Cada ración, cada limpieza, cada vacuna, en un solo lugar.</h2>
+      <img class="ilustracion" src="/assets/img/mirada.svg" alt="">
+    </section>
+
+    <main class="login-formulario">
+      <div class="contenido">
+        <a class="portal-marca d-lg-none mb-4" href="/" style="color: var(--zoo-selva)">
+          <img src="/assets/img/logo.svg" alt="">
+          Mirada Salvaje
+        </a>
+
+        <h1>Acceso del personal</h1>
+        <p class="text-secondary mb-4">Ingresa con el usuario que te asignó la administración.</p>
+
+        <div class="alert alert-warning d-none" id="avisoSesion" role="status"></div>
+
+        <form id="formLogin" novalidate>
+          <div class="alert alert-danger d-none" data-error-general role="alert"></div>
+
+          <div class="mb-3">
+            <label class="form-label" for="usuario">Usuario o correo</label>
+            <input class="form-control" id="usuario" name="usuario" autocomplete="username" required autofocus>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label" for="password">Contraseña</label>
+            <div class="input-group">
+              <input class="form-control" id="password" name="password" type="password" autocomplete="current-password" required>
+              <button class="btn btn-outline-secondary" type="button" id="verPassword" aria-label="Mostrar contraseña">
+                <i class="bi bi-eye"></i>
+              </button>
+            </div>
+          </div>
+
+          <button class="btn btn-primary w-100" type="submit">Iniciar sesión</button>
+        </form>
+
+        <p class="mt-4 mb-0 small"><a href="/"><i class="bi bi-arrow-left me-1"></i>Volver al portal de visitantes</a></p>
+
+        <div class="login-ayuda">
+          Usuarios de prueba: <code>admin</code>, <code>director</code>, <code>veterinario</code>, <code>cuidador</code>,
+          <code>bodega</code>, <code>suplimpieza</code>, <code>limpieza</code> y <code>taquilla</code>.
+          Contraseña <code>Zoo2026!</code>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js" defer></script>
+  <script src="/assets/js/core/ui.js" defer></script>
+  <script src="/assets/js/core/api.js" defer></script>
+  <script src="/assets/js/publico/login.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mi perfil | Mirada Salvaje</title>
+  <link rel="icon" href="/assets/img/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/vendor/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/vendor/bootstrap-icons/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="/assets/css/zoo.css">
+</head>
+<body class="cargando">
+
+  <main class="app-main" data-titulo="Mi perfil">
+    <div class="pagina-encabezado">
+      <div>
+        <h2>Mi perfil</h2>
+        <p>Tus datos de acceso. Para cambiar tu nombre, correo o rol, solicítalo al administrador.</p>
+      </div>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-lg-5">
+        <section class="panel">
+          <div class="panel-encabezado"><h3>Datos de la cuenta</h3></div>
+          <dl class="panel-cuerpo row mb-0" id="datosCuenta"></dl>
+        </section>
+      </div>
+
+      <div class="col-lg-7">
+        <section class="panel">
+          <div class="panel-encabezado"><h3>Cambiar contraseña</h3></div>
+          <form class="panel-cuerpo" id="formPassword" novalidate>
+            <div class="alert alert-danger d-none" data-error-general role="alert"></div>
+            <div class="mb-3">
+              <label class="form-label" for="actual">Contraseña actual</label>
+              <input class="form-control" type="password" id="actual" name="actual" autocomplete="current-password" required>
+            </div>
+            <div class="row g-3 mb-2">
+              <div class="col-sm-6">
+                <label class="form-label" for="nueva">Nueva contraseña</label>
+                <input class="form-control" type="password" id="nueva" name="nueva" autocomplete="new-password" required>
+              </div>
+              <div class="col-sm-6">
+                <label class="form-label" for="confirmacion">Confirma la nueva contraseña</label>
+                <input class="form-control" type="password" id="confirmacion" name="confirmacion" autocomplete="new-password" required>
+              </div>
+            </div>
+            <p class="form-text mb-3">Mínimo 8 caracteres, con al menos una letra y un número. Al cambiarla se cierran tus sesiones en otros dispositivos.</p>
+            <button class="btn btn-primary" type="submit">Guardar contraseña</button>
+          </form>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js" defer></script>
+  <script src="/assets/js/core/api.js" defer></script>
+  <script src="/assets/js/core/ui.js" defer></script>
+  <script src="/assets/js/core/layout.js" defer></script>
+  <script src="/assets/js/paginas/perfil.js" defer></script>
+</body>
+</html>

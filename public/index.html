@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Zoológico Mirada Salvaje. Horarios, promociones y compra de entradas en línea.">
+  <title>Zoológico Mirada Salvaje</title>
+  <link rel="icon" href="/assets/img/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/vendor/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/vendor/bootstrap-icons/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="/assets/css/zoo.css">
+  <link rel="stylesheet" href="/assets/css/publico.css">
+</head>
+<body>
+
+  <header class="portal-encabezado">
+    <nav class="navbar navbar-expand-md" aria-label="Navegación principal">
+      <div class="container">
+        <a class="portal-marca" href="/">
+          <img src="/assets/img/logo.svg" alt="">
+          Mirada Salvaje
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navPortal"
+                aria-controls="navPortal" aria-expanded="false" aria-label="Abrir navegación">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navPortal">
+          <ul class="navbar-nav ms-auto align-items-md-center gap-md-2">
+            <li class="nav-item"><a class="nav-link" href="#visita">Planifica tu visita</a></li>
+            <li class="nav-item"><a class="nav-link" href="#promociones">Promociones</a></li>
+            <li class="nav-item"><a class="nav-link" href="/login.html">Personal</a></li>
+            <li class="nav-item ms-md-2"><a class="btn btn-acento" href="/entradas/comprar.html">Comprar entradas</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <section class="portada" aria-labelledby="tituloPortada">
+      <div class="container">
+        <div class="pb-lg-5">
+          <h1 id="tituloPortada">Alguien ya te está mirando.</h1>
+          <p class="bajada">
+            Recorre la selva, la sabana y el aviario del zoológico Mirada Salvaje. Compra tu entrada en línea
+            y llega directo a la puerta con tu código QR.
+          </p>
+          <div class="acciones">
+            <a class="btn btn-acento btn-lg" href="/entradas/comprar.html"><i class="bi bi-ticket-perforated me-2"></i>Comprar entradas</a>
+            <a class="btn btn-outline-light btn-lg" href="#visita">Ver horarios</a>
+          </div>
+        </div>
+        <div class="portada-ilustracion">
+          <img src="/assets/img/mirada.svg" alt="Unos ojos de felino observan entre el follaje" width="600" height="520">
+        </div>
+      </div>
+    </section>
+
+    <section class="seccion" id="visita" aria-labelledby="tituloVisita">
+      <div class="container">
+        <h2 id="tituloVisita">Planifica tu visita</h2>
+        <p class="intro">Todo lo que necesitas saber antes de llegar.</p>
+        <dl class="datos-visita">
+          <div>
+            <dt><i class="bi bi-clock"></i>Horario</dt>
+            <dd><strong>Martes a domingo</strong>, de 9:00 a 17:00. La taquilla cierra a las 16:00. Los lunes el zoológico permanece cerrado para mantenimiento.</dd>
+          </div>
+          <div>
+            <dt><i class="bi bi-qr-code"></i>Entrada con código QR</dt>
+            <dd>Al comprar en línea recibes un código QR. Muéstralo en la puerta desde tu teléfono o impreso; no necesitas pasar por taquilla.</dd>
+          </div>
+          <div>
+            <dt><i class="bi bi-tree"></i>Durante el recorrido</dt>
+            <dd>No alimentes a los animales: cada uno sigue una dieta definida por nuestro equipo veterinario. Usa los senderos señalizados y respeta las barreras.</dd>
+          </div>
+        </dl>
+      </div>
+    </section>
+
+    <section class="seccion seccion-promos" id="promociones" aria-labelledby="tituloPromos">
+      <div class="container">
+        <h2 id="tituloPromos">Promociones vigentes</h2>
+        <p class="intro">Descuentos para familias, estudiantes y grupos. Se aplican al comprar en línea.</p>
+        <div class="promos" id="listaPromociones" aria-live="polite">
+          <div class="promos-vacio">Cargando promociones…</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="seccion">
+      <div class="container">
+        <div class="llamado">
+          <div>
+            <h2>Tu próxima visita empieza aquí</h2>
+            <p>Elige la fecha, el tipo de entrada y paga en línea en pocos pasos.</p>
+          </div>
+          <a class="btn btn-acento btn-lg" href="/entradas/comprar.html">Comprar entradas</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="portal-pie">
+    <div class="container d-flex flex-wrap justify-content-between gap-2">
+      <span>Zoológico Mirada Salvaje, Jutiapa, Guatemala</span>
+      <a href="/login.html">Acceso del personal</a>
+    </div>
+  </footer>
+
+  <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js" defer></script>
+  <script src="/assets/js/core/ui.js" defer></script>
+  <script src="/assets/js/core/api.js" defer></script>
+  <script src="/assets/js/publico/portal.js" defer></script>
+</body>
+</html>

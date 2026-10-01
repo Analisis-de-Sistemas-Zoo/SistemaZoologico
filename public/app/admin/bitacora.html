@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bitácora | Mirada Salvaje</title>
+  <link rel="icon" href="/assets/img/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/vendor/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/vendor/bootstrap-icons/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="/assets/css/zoo.css">
+</head>
+<body class="cargando">
+
+  <main class="app-main" data-titulo="Bitácora">
+    <div class="pagina-encabezado">
+      <div>
+        <h2>Bitácora de actividades</h2>
+        <p>Registro de cada acción realizada en el sistema, con el usuario, la fecha, la hora y el equipo desde el que se hizo.</p>
+      </div>
+      <div class="d-flex gap-2">
+        <button class="btn btn-outline-primary" type="button" id="btnPdf"><i class="bi bi-file-earmark-pdf me-2"></i>Exportar PDF</button>
+        <button class="btn btn-outline-primary" type="button" id="btnExcel"><i class="bi bi-file-earmark-spreadsheet me-2"></i>Exportar Excel</button>
+      </div>
+    </div>
+
+    <section class="panel">
+      <form class="filtros" id="formFiltros">
+        <div>
+          <label class="form-label" for="fDesde">Desde</label>
+          <input class="form-control" type="date" id="fDesde" name="desde">
+        </div>
+        <div>
+          <label class="form-label" for="fHasta">Hasta</label>
+          <input class="form-control" type="date" id="fHasta" name="hasta">
+        </div>
+        <div>
+          <label class="form-label" for="fUsuario">Usuario</label>
+          <select class="form-select" id="fUsuario" name="usuario_id"></select>
+        </div>
+        <div>
+          <label class="form-label" for="fModulo">Módulo</label>
+          <select class="form-select" id="fModulo" name="modulo"></select>
+        </div>
+        <div>
+          <label class="form-label" for="fAccion">Acción</label>
+          <select class="form-select" id="fAccion" name="accion"></select>
+        </div>
+      </form>
+      <div class="table-responsive">
+        <table class="table table-hover tabla-zoo">
+          <thead>
+            <tr>
+              <th>Fecha y hora</th>
+              <th>Usuario</th>
+              <th>Módulo</th>
+              <th>Acción</th>
+              <th>Registro</th>
+              <th>Detalle</th>
+              <th>IP</th>
+            </tr>
+          </thead>
+          <tbody id="tablaBitacora"></tbody>
+        </table>
+      </div>
+      <div class="paginacion">
+        <span id="infoPaginacion"></span>
+        <div class="btn-group">
+          <button class="btn btn-sm btn-light" type="button" id="btnAnterior"><i class="bi bi-chevron-left"></i> Anterior</button>
+          <button class="btn btn-sm btn-light" type="button" id="btnSiguiente">Siguiente <i class="bi bi-chevron-right"></i></button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js" defer></script>
+  <script src="/vendor/jspdf/jspdf.umd.min.js" defer></script>
+  <script src="/vendor/jspdf-autotable/jspdf.plugin.autotable.min.js" defer></script>
+  <script src="/vendor/exceljs/exceljs.min.js" defer></script>
+  <script src="/assets/js/core/api.js" defer></script>
+  <script src="/assets/js/core/ui.js" defer></script>
+  <script src="/assets/js/core/reportes.js" defer></script>
+  <script src="/assets/js/core/layout.js" defer></script>
+  <script src="/assets/js/paginas/admin/bitacora.js" defer></script>
+</body>
+</html>

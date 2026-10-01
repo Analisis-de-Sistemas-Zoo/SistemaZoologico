@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Usuarios | Mirada Salvaje</title>
+  <link rel="icon" href="/assets/img/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/vendor/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/vendor/bootstrap-icons/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="/assets/css/zoo.css">
+</head>
+<body class="cargando">
+
+  <main class="app-main" data-titulo="Usuarios">
+    <div class="pagina-encabezado">
+      <div>
+        <h2>Usuarios del sistema</h2>
+        <p>Crea las cuentas del personal y asigna a cada una el rol que define a qué módulos puede entrar.</p>
+      </div>
+      <button class="btn btn-primary" type="button" id="btnNuevo"><i class="bi bi-person-plus me-2"></i>Nuevo usuario</button>
+    </div>
+
+    <section class="panel">
+      <form class="filtros" id="formFiltros">
+        <div>
+          <label class="form-label" for="fBuscar">Buscar</label>
+          <input class="form-control" id="fBuscar" name="buscar" placeholder="Nombre, usuario o correo">
+        </div>
+        <div>
+          <label class="form-label" for="fRol">Rol</label>
+          <select class="form-select" id="fRol" name="rol_id"></select>
+        </div>
+        <div>
+          <label class="form-label" for="fActivo">Estado</label>
+          <select class="form-select" id="fActivo" name="activo">
+            <option value="">Todos</option>
+            <option value="1">Activos</option>
+            <option value="0">Inactivos</option>
+          </select>
+        </div>
+      </form>
+      <div class="table-responsive">
+        <table class="table table-hover tabla-zoo">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Usuario</th>
+              <th>Rol</th>
+              <th>Estado</th>
+              <th>Último acceso</th>
+              <th class="text-end">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tablaUsuarios"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <!-- Crear / editar usuario -->
+  <div class="modal fade" id="modalUsuario" tabindex="-1" aria-labelledby="tituloModalUsuario" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <form class="modal-content" id="formUsuario" novalidate>
+        <div class="modal-header">
+          <h5 class="modal-title" id="tituloModalUsuario">Nuevo usuario</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <div class="alert alert-danger d-none" data-error-general role="alert"></div>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label" for="uNombres">Nombres</label>
+              <input class="form-control" id="uNombres" name="nombres" maxlength="80" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label" for="uApellidos">Apellidos</label>
+              <input class="form-control" id="uApellidos" name="apellidos" maxlength="80" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label" for="uUsuario">Usuario</label>
+              <input class="form-control" id="uUsuario" name="usuario" maxlength="40" autocomplete="off" required>
+              <div class="form-text">Letras minúsculas, números, punto o guion.</div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label" for="uCorreo">Correo</label>
+              <input class="form-control" id="uCorreo" name="correo" type="email" maxlength="120" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label" for="uRol">Rol</label>
+              <select class="form-select" id="uRol" name="rol_id" required></select>
+              <div class="form-text" id="uRolDescripcion"></div>
+            </div>
+            <div class="col-md-6" id="grupoPassword">
+              <label class="form-label" for="uPassword">Contraseña inicial</label>
+              <input class="form-control" id="uPassword" name="password" type="password" autocomplete="new-password" required>
+              <div class="form-text">Mínimo 8 caracteres, con letras y números.</div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Guardar usuario</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Restablecer contraseña -->
+  <div class="modal fade" id="modalPassword" tabindex="-1" aria-labelledby="tituloModalPassword" aria-hidden="true">
+    <div class="modal-dialog">
+      <form class="modal-content" id="formPassword" novalidate>
+        <div class="modal-header">
+          <h5 class="modal-title" id="tituloModalPassword">Restablecer contraseña</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <div class="alert alert-danger d-none" data-error-general role="alert"></div>
+          <p class="mb-3">Nueva contraseña para <strong id="passwordPara"></strong>. Se cerrarán sus sesiones abiertas.</p>
+          <label class="form-label" for="pNueva">Nueva contraseña</label>
+          <input class="form-control" id="pNueva" name="password" type="password" autocomplete="new-password" required>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Restablecer contraseña</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js" defer></script>
+  <script src="/assets/js/core/api.js" defer></script>
+  <script src="/assets/js/core/ui.js" defer></script>
+  <script src="/assets/js/core/layout.js" defer></script>
+  <script src="/assets/js/paginas/admin/usuarios.js" defer></script>
+</body>
+</html>

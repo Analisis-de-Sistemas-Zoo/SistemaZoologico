@@ -1,0 +1,692 @@
+/* =============================================================================
+   zoo.css — Identidad visual del sistema "Mirada Salvaje"
+   Se carga en TODAS las páginas después de Bootstrap.
+
+   Paleta
+     selva   #1E3A2B  verde profundo (barra lateral, títulos)
+     hoja    #2F6B45  verde principal (botones, enlaces)
+     brote   #E4EFE6  verde muy claro (fondos suaves, filas activas)
+     papaya  #E39A2D  acento cálido (alertas, foco, detalles)
+     fondo   #F2F5F1  fondo general
+     tinta   #18221D  texto
+   Tipografía
+     Bricolage Grotesque  títulos
+     Public Sans          texto e interfaz
+   ========================================================================== */
+
+@import url('/vendor/fuentes/public-sans/wght.css');
+@import url('/vendor/fuentes/bricolage/standard.css');
+
+:root {
+  --zoo-selva: #1e3a2b;
+  --zoo-selva-2: #274a37;
+  --zoo-hoja: #2f6b45;
+  --zoo-hoja-oscura: #255637;
+  --zoo-brote: #e4efe6;
+  --zoo-papaya: #e39a2d;
+  --zoo-papaya-suave: #fbeed8;
+  --zoo-fondo: #f2f5f1;
+  --zoo-tinta: #18221d;
+  --zoo-tinta-suave: #56655c;
+  --zoo-linea: #d5ded6;
+  --zoo-blanco: #ffffff;
+
+  --zoo-fuente-titulo: 'Bricolage Grotesque Variable', 'Segoe UI', system-ui, sans-serif;
+  --zoo-fuente-texto: 'Public Sans Variable', 'Segoe UI', system-ui, sans-serif;
+
+  --zoo-radio: 0.5rem;
+  --zoo-radio-grande: 0.875rem;
+  --zoo-ancho-lateral: 16.5rem;
+
+  /* Bootstrap */
+  --bs-body-font-family: var(--zoo-fuente-texto);
+  --bs-body-color: var(--zoo-tinta);
+  --bs-body-bg: var(--zoo-fondo);
+  --bs-primary: var(--zoo-hoja);
+  --bs-primary-rgb: 47, 107, 69;
+  --bs-link-color: var(--zoo-hoja);
+  --bs-link-color-rgb: 47, 107, 69;
+  --bs-link-hover-color: var(--zoo-selva);
+  --bs-link-hover-color-rgb: 30, 58, 43;
+  --bs-border-color: var(--zoo-linea);
+  --bs-border-radius: var(--zoo-radio);
+  --bs-secondary-color: var(--zoo-tinta-suave);
+  --bs-focus-ring-color: rgba(227, 154, 45, 0.35);
+}
+
+body {
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, .titulo {
+  font-family: var(--zoo-fuente-titulo);
+  font-weight: 650;
+  color: var(--zoo-selva);
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+/* ---------------------------------------------------------------- Botones */
+.btn {
+  font-weight: 550;
+  border-radius: var(--zoo-radio);
+}
+
+.btn-primary {
+  --bs-btn-bg: var(--zoo-hoja);
+  --bs-btn-border-color: var(--zoo-hoja);
+  --bs-btn-hover-bg: var(--zoo-hoja-oscura);
+  --bs-btn-hover-border-color: var(--zoo-hoja-oscura);
+  --bs-btn-active-bg: var(--zoo-selva);
+  --bs-btn-active-border-color: var(--zoo-selva);
+  --bs-btn-disabled-bg: var(--zoo-hoja);
+  --bs-btn-disabled-border-color: var(--zoo-hoja);
+}
+
+.btn-outline-primary {
+  --bs-btn-color: var(--zoo-hoja);
+  --bs-btn-border-color: var(--zoo-hoja);
+  --bs-btn-hover-bg: var(--zoo-hoja);
+  --bs-btn-hover-border-color: var(--zoo-hoja);
+  --bs-btn-active-bg: var(--zoo-selva);
+  --bs-btn-active-border-color: var(--zoo-selva);
+}
+
+.btn-acento {
+  --bs-btn-color: var(--zoo-tinta);
+  --bs-btn-bg: var(--zoo-papaya);
+  --bs-btn-border-color: var(--zoo-papaya);
+  --bs-btn-hover-color: var(--zoo-tinta);
+  --bs-btn-hover-bg: #d08a20;
+  --bs-btn-hover-border-color: #d08a20;
+  --bs-btn-active-bg: #bb7a15;
+  --bs-btn-active-border-color: #bb7a15;
+}
+
+/* Foco visible y consistente para teclado */
+.btn:focus-visible,
+.form-control:focus,
+.form-select:focus,
+.form-check-input:focus,
+a:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 0.2rem var(--bs-focus-ring-color);
+  border-color: var(--zoo-papaya);
+}
+
+.form-control,
+.form-select {
+  background-color: var(--zoo-blanco);
+}
+
+.form-check-input:checked {
+  background-color: var(--zoo-hoja);
+  border-color: var(--zoo-hoja);
+}
+
+.form-label {
+  font-weight: 550;
+  font-size: 0.875rem;
+  margin-bottom: 0.3rem;
+}
+
+/* ----------------------------------------------------------- Pantalla de carga
+   Las páginas internas arrancan con body.cargando hasta que layout.js valida
+   la sesión, para que nunca se vea contenido sin autorización. */
+body.cargando .app-main,
+body.cargando .app-shell {
+  visibility: hidden;
+}
+
+body.cargando::after {
+  content: '';
+  position: fixed;
+  inset: 50% auto auto 50%;
+  width: 2.25rem;
+  height: 2.25rem;
+  margin: -1.125rem 0 0 -1.125rem;
+  border: 3px solid var(--zoo-brote);
+  border-top-color: var(--zoo-hoja);
+  border-radius: 50%;
+  animation: zoo-giro 0.8s linear infinite;
+}
+
+@keyframes zoo-giro {
+  to { transform: rotate(360deg); }
+}
+
+/* ================================================================ APP INTERNA */
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ---- Barra lateral */
+.app-lateral {
+  --bs-offcanvas-width: var(--zoo-ancho-lateral);
+  --bs-offcanvas-bg: var(--zoo-selva);
+  --bs-offcanvas-color: #dfe9e1;
+  background: var(--zoo-selva);
+  color: #dfe9e1;
+}
+
+/* Bootstrap pone el offcanvas transparente en pantallas grandes; aquí no. */
+.app-shell .app-lateral {
+  background-color: var(--zoo-selva) !important;
+}
+
+@media (min-width: 992px) {
+  .app-lateral {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    width: var(--zoo-ancho-lateral);
+    flex: 0 0 var(--zoo-ancho-lateral);
+    overflow-y: auto;
+  }
+}
+
+.app-marca {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 1.25rem 1.25rem 1rem;
+  color: #fff;
+  text-decoration: none;
+}
+
+.app-marca img {
+  width: 2.4rem;
+  height: 2.4rem;
+}
+
+.app-marca strong {
+  display: block;
+  font-family: var(--zoo-fuente-titulo);
+  font-size: 1.1rem;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+
+.app-marca small {
+  display: block;
+  color: #a9c2b0;
+  font-size: 0.75rem;
+}
+
+.app-nav {
+  padding: 0.5rem 0.75rem 1.5rem;
+}
+
+.app-nav-seccion {
+  margin-top: 1rem;
+}
+
+.app-nav-titulo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 0.6rem 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #8fae98;
+}
+
+.app-nav a {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.5rem 0.65rem;
+  margin-bottom: 1px;
+  border-radius: var(--zoo-radio);
+  color: #dfe9e1;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.app-nav a .bi {
+  font-size: 1.05rem;
+  color: #9fbfa8;
+}
+
+.app-nav a:hover {
+  background: var(--zoo-selva-2);
+  color: #fff;
+}
+
+.app-nav a.activo {
+  background: var(--zoo-brote);
+  color: var(--zoo-selva);
+  font-weight: 600;
+}
+
+.app-nav a.activo .bi {
+  color: var(--zoo-hoja);
+}
+
+.app-nav a:focus-visible {
+  box-shadow: 0 0 0 0.2rem var(--zoo-papaya);
+}
+
+/* ---- Cuerpo y barra superior */
+.app-cuerpo {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-superior {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 3.75rem;
+  padding: 0.5rem 1.5rem;
+  background: var(--zoo-blanco);
+  border-bottom: 1px solid var(--zoo-linea);
+  position: sticky;
+  top: 0;
+  z-index: 1020;
+}
+
+.app-superior h1 {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.app-usuario {
+  margin-left: auto;
+}
+
+.app-usuario .btn {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  text-align: left;
+  border: 0;
+  padding: 0.3rem 0.5rem;
+}
+
+.app-usuario .avatar {
+  display: grid;
+  place-items: center;
+  width: 2.1rem;
+  height: 2.1rem;
+  border-radius: 50%;
+  background: var(--zoo-papaya-suave);
+  color: #8a5710;
+  font-weight: 700;
+  font-size: 0.82rem;
+}
+
+.app-usuario .nombre {
+  display: block;
+  font-weight: 600;
+  font-size: 0.875rem;
+  line-height: 1.15;
+}
+
+.app-usuario .rol {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--zoo-tinta-suave);
+}
+
+.app-main {
+  flex: 1 1 auto;
+  width: 100%;
+  max-width: 1320px;
+  padding: 1.75rem 1.5rem 3rem;
+}
+
+@media (max-width: 575.98px) {
+  .app-main { padding: 1.25rem 1rem 2.5rem; }
+  .app-superior { padding: 0.5rem 1rem; }
+  .app-usuario .texto { display: none; }
+}
+
+/* ---- Encabezado de página */
+.pagina-encabezado {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.pagina-encabezado h2 {
+  margin: 0;
+  font-size: 1.6rem;
+}
+
+.pagina-encabezado p {
+  margin: 0.25rem 0 0;
+  color: var(--zoo-tinta-suave);
+  max-width: 62ch;
+}
+
+/* ---- Paneles (contenedores de contenido) */
+.panel {
+  background: var(--zoo-blanco);
+  border: 1px solid var(--zoo-linea);
+  border-radius: var(--zoo-radio-grande);
+}
+
+.panel-cuerpo {
+  padding: 1.25rem;
+}
+
+.panel-encabezado {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--zoo-linea);
+}
+
+.panel-encabezado h3 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+/* ---- Filtros */
+.filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: flex-end;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--zoo-linea);
+  background: #fafcf9;
+  border-radius: var(--zoo-radio-grande) var(--zoo-radio-grande) 0 0;
+}
+
+.filtros > div {
+  flex: 1 1 10rem;
+}
+
+.filtros .form-label {
+  font-size: 0.8rem;
+  color: var(--zoo-tinta-suave);
+}
+
+/* ---- Tablas */
+.tabla-zoo {
+  margin: 0;
+  --bs-table-hover-bg: #f5f9f5;
+}
+
+.tabla-zoo thead th {
+  background: #fafcf9;
+  color: var(--zoo-tinta-suave);
+  font-weight: 600;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  border-bottom-width: 1px;
+  padding: 0.7rem 0.9rem;
+}
+
+.tabla-zoo td {
+  padding: 0.7rem 0.9rem;
+  vertical-align: middle;
+}
+
+.tabla-zoo .acciones {
+  white-space: nowrap;
+  text-align: right;
+}
+
+.tabla-vacia {
+  padding: 2.5rem 1rem;
+  text-align: center;
+  color: var(--zoo-tinta-suave);
+}
+
+.tabla-vacia .bi {
+  display: block;
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  color: #a8bcae;
+}
+
+/* ---- Estados */
+.estado {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.estado::before {
+  content: '';
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.estado-ok { background: var(--zoo-brote); color: var(--zoo-hoja-oscura); }
+.estado-alerta { background: var(--zoo-papaya-suave); color: #8a5710; }
+.estado-peligro { background: #fbe3e1; color: #a1281d; }
+.estado-neutro { background: #eceff0; color: #55605a; }
+
+/* ---- Tarjetas de resumen del inicio */
+.resumen {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+  gap: 1rem;
+}
+
+.resumen-item {
+  display: flex;
+  gap: 0.9rem;
+  align-items: center;
+  padding: 1.1rem 1.15rem;
+  background: var(--zoo-blanco);
+  border: 1px solid var(--zoo-linea);
+  border-radius: var(--zoo-radio-grande);
+  color: inherit;
+  text-decoration: none;
+}
+
+a.resumen-item:hover {
+  border-color: var(--zoo-hoja);
+}
+
+.resumen-item .icono {
+  display: grid;
+  place-items: center;
+  flex: 0 0 2.75rem;
+  height: 2.75rem;
+  border-radius: var(--zoo-radio);
+  font-size: 1.25rem;
+  background: var(--zoo-brote);
+  color: var(--zoo-hoja);
+}
+
+.resumen-item .icono.alerta { background: var(--zoo-papaya-suave); color: #8a5710; }
+.resumen-item .icono.peligro { background: #fbe3e1; color: #a1281d; }
+.resumen-item .icono.neutro { background: #eceff0; color: #55605a; }
+
+.resumen-item .valor {
+  display: block;
+  font-family: var(--zoo-fuente-titulo);
+  font-size: 1.6rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--zoo-selva);
+}
+
+.resumen-item .etiqueta {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.85rem;
+  color: var(--zoo-tinta-suave);
+}
+
+/* ---- Accesos a módulos en el inicio */
+.accesos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
+  gap: 1rem;
+}
+
+.acceso {
+  padding: 1.15rem 1.25rem;
+  background: var(--zoo-blanco);
+  border: 1px solid var(--zoo-linea);
+  border-left: 4px solid var(--zoo-hoja);
+  border-radius: var(--zoo-radio);
+}
+
+.acceso h3 {
+  font-size: 1.05rem;
+  margin-bottom: 0.6rem;
+}
+
+.acceso ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.acceso li a {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0;
+  text-decoration: none;
+}
+
+.acceso li a:hover {
+  text-decoration: underline;
+}
+
+/* ---- Saludo del inicio */
+.saludo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.5rem 1.75rem;
+  margin-bottom: 1.5rem;
+  background: var(--zoo-selva);
+  border-radius: var(--zoo-radio-grande);
+  color: #dfe9e1;
+  background-image: url('/assets/img/hojas.svg');
+  background-repeat: no-repeat;
+  background-position: right -2rem center;
+  background-size: auto 140%;
+}
+
+.saludo h2 {
+  color: #fff;
+  font-size: 1.75rem;
+  margin: 0 0 0.25rem;
+}
+
+.saludo p {
+  margin: 0;
+}
+
+/* ---- Paginación */
+.paginacion {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.85rem 1.25rem;
+  border-top: 1px solid var(--zoo-linea);
+  font-size: 0.85rem;
+  color: var(--zoo-tinta-suave);
+}
+
+/* ---- Notificaciones */
+.zoo-toasts {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 1090;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-width: min(24rem, calc(100vw - 2rem));
+}
+
+.zoo-toast {
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-start;
+  padding: 0.8rem 1rem;
+  border-radius: var(--zoo-radio);
+  background: var(--zoo-tinta);
+  color: #fff;
+  box-shadow: 0 8px 24px rgba(24, 34, 29, 0.22);
+  font-size: 0.9rem;
+}
+
+.zoo-toast .bi { font-size: 1.1rem; margin-top: 0.05rem; }
+.zoo-toast.exito .bi { color: #8fd6a5; }
+.zoo-toast.error .bi { color: #ff9b8f; }
+.zoo-toast.aviso .bi { color: var(--zoo-papaya); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .zoo-toast { animation: zoo-entrada 0.2s ease-out; }
+  @keyframes zoo-entrada {
+    from { opacity: 0; transform: translateY(0.5rem); }
+  }
+}
+
+/* ---- Modales */
+.modal-content {
+  border: 0;
+  border-radius: var(--zoo-radio-grande);
+}
+
+.modal-header {
+  border-bottom-color: var(--zoo-linea);
+}
+
+.modal-title {
+  font-family: var(--zoo-fuente-titulo);
+  font-weight: 650;
+  color: var(--zoo-selva);
+}
+
+.modal-footer {
+  border-top-color: var(--zoo-linea);
+}
+
+/* ---- Páginas de error (403 / 404) */
+.pagina-error {
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+  padding: 2rem 1rem;
+  text-align: center;
+}
+
+.pagina-error .codigo {
+  font-family: var(--zoo-fuente-titulo);
+  font-size: clamp(4rem, 14vw, 7rem);
+  font-weight: 800;
+  line-height: 1;
+  color: var(--zoo-hoja);
+}
+
+.pagina-error p {
+  max-width: 40ch;
+  margin: 0.75rem auto 1.5rem;
+  color: var(--zoo-tinta-suave);
+}
