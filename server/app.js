@@ -22,6 +22,8 @@ const authRoutes = require('./core/auth/auth.routes');
 const usuariosRoutes = require('./core/usuarios/usuarios.routes');
 const bitacoraRoutes = require('./core/bitacora/bitacora.routes');
 const dashboardRoutes = require('./core/dashboard/dashboard.routes');
+const catalogosRoutes = require('./core/catalogos/catalogos.routes');
+const comunRoutes = require('./core/comun/comun.routes');
 
 const RAIZ = path.join(__dirname, '..');
 const PUBLIC = path.join(RAIZ, 'public');
@@ -78,6 +80,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/dashboard', requiereAuth, dashboardRoutes);
 app.use('/api/usuarios', requiereAuth, requierePermiso('usuarios.gestionar'), usuariosRoutes);
 app.use('/api/bitacora', requiereAuth, requierePermiso('bitacora.ver'), bitacoraRoutes);
+app.use('/api/catalogos', requiereAuth, requierePermiso('catalogos.ver'), catalogosRoutes);
+app.use('/api/comun', requiereAuth, comunRoutes);
 
 const modulos = cargarModulos();
 for (const modulo of modulos) {
