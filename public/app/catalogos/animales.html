@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Animales | Mirada Salvaje</title>
+  <link rel="icon" href="/assets/img/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/vendor/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/vendor/bootstrap-icons/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="/assets/css/zoo.css">
+</head>
+<body class="cargando">
+
+  <main class="app-main" data-titulo="Animales">
+    <div class="pagina-encabezado">
+      <div>
+        <h2>Animales</h2>
+        <p>Registro de los animales del zoológico, la jaula donde viven y su estado de salud.</p>
+      </div>
+      <div class="d-flex flex-wrap gap-2">
+        <div class="btn-group">
+          <button class="btn btn-outline-primary" type="button" id="btnPdf"><i class="bi bi-file-earmark-pdf me-2"></i>PDF</button>
+          <button class="btn btn-outline-primary" type="button" id="btnExcel"><i class="bi bi-file-earmark-spreadsheet me-2"></i>Excel</button>
+        </div>
+        <button class="btn btn-primary" type="button" id="btnNuevo"><i class="bi bi-plus-lg me-2"></i>Nuevo animal</button>
+      </div>
+    </div>
+
+    <section class="panel">
+      <form class="filtros" id="formFiltros">
+        <div>
+          <label class="form-label" for="fBuscar">Buscar</label>
+          <input class="form-control" id="fBuscar" name="buscar" placeholder="Nombre, código o especie">
+        </div>
+        <div>
+          <label class="form-label" for="fEspecie">Especie</label>
+          <select class="form-select" id="fEspecie" name="especie_id"></select>
+        </div>
+        <div>
+          <label class="form-label" for="fArea">Jaula</label>
+          <select class="form-select" id="fArea" name="area_id"></select>
+        </div>
+        <div>
+          <label class="form-label" for="fSalud">Salud</label>
+          <select class="form-select" id="fSalud" name="estado_salud"></select>
+        </div>
+        <div>
+          <label class="form-label" for="fEstado">Situación</label>
+          <select class="form-select" id="fEstado" name="estado"></select>
+        </div>
+      </form>
+      <div class="table-responsive">
+        <table class="table table-hover tabla-zoo">
+          <thead>
+            <tr>
+              <th>Código</th>
+              <th>Animal</th>
+              <th>Jaula</th>
+              <th>Sexo</th>
+              <th class="text-end">Edad</th>
+              <th class="text-end">Peso</th>
+              <th>Salud</th>
+              <th>Situación</th>
+              <th class="text-end">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tabla"></tbody>
+        </table>
+      </div>
+      <div class="paginacion"><span id="totalAnimales"></span></div>
+    </section>
+  </main>
+
+  <!-- Ficha (solo lectura) -->
+  <div class="modal fade" id="modalFicha" tabindex="-1" aria-labelledby="tituloFicha" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="tituloFicha">Ficha del animal</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body"><dl class="row mb-0" id="datosFicha"></dl></div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Registrar / editar -->
+  <div class="modal fade" id="modalEditar" tabindex="-1" aria-labelledby="tituloModal" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <form class="modal-content" id="formEditar" novalidate>
+        <div class="modal-header">
+          <h5 class="modal-title" id="tituloModal">Nuevo animal</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <div class="alert alert-danger d-none" data-error-general role="alert"></div>
+          <div class="row g-3">
+            <div class="col-md-4" id="grupoCodigo">
+              <label class="form-label" for="nCodigo">Código</label>
+              <input class="form-control" id="nCodigo" name="codigo" readonly disabled>
+            </div>
+            <div class="col-md-8" id="grupoNombre">
+              <label class="form-label" for="nNombre">Nombre</label>
+              <input class="form-control" id="nNombre" name="nombre" maxlength="80" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label" for="nEspecie">Especie</label>
+              <select class="form-select" id="nEspecie" name="especie_id" required></select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label" for="nArea">Jaula o recinto</label>
+              <select class="form-select" id="nArea" name="area_id" required></select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label" for="nSexo">Sexo</label>
+              <select class="form-select" id="nSexo" name="sexo" required></select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label" for="nNacimiento">Fecha de nacimiento</label>
+              <input class="form-control" id="nNacimiento" name="fecha_nacimiento" type="date">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label" for="nIngreso">Fecha de ingreso</label>
+              <input class="form-control" id="nIngreso" name="fecha_ingreso" type="date" required>
+            </div>
+            <div class="col-md-8">
+              <label class="form-label" for="nProcedencia">Procedencia</label>
+              <input class="form-control" id="nProcedencia" name="procedencia" maxlength="120" placeholder="Ej. Rescate, intercambio, nacido en el zoológico">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label" for="nPeso">Peso (kg)</label>
+              <input class="form-control" id="nPeso" name="peso_kg" type="number" min="0.01" step="0.01">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label" for="nSalud">Estado de salud</label>
+              <select class="form-select" id="nSalud" name="estado_salud" required></select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label" for="nEstado">Situación</label>
+              <select class="form-select" id="nEstado" name="estado" required></select>
+            </div>
+            <div class="col-12">
+              <label class="form-label" for="nObservaciones">Observaciones</label>
+              <textarea class="form-control" id="nObservaciones" name="observaciones" rows="2" maxlength="500"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Guardar animal</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js" defer></script>
+  <script src="/vendor/jspdf/jspdf.umd.min.js" defer></script>
+  <script src="/vendor/jspdf-autotable/jspdf.plugin.autotable.min.js" defer></script>
+  <script src="/vendor/exceljs/exceljs.min.js" defer></script>
+  <script src="/assets/js/core/api.js" defer></script>
+  <script src="/assets/js/core/ui.js" defer></script>
+  <script src="/assets/js/core/etiquetas.js" defer></script>
+  <script src="/assets/js/core/crud.js" defer></script>
+  <script src="/assets/js/core/reportes.js" defer></script>
+  <script src="/assets/js/core/layout.js" defer></script>
+  <script src="/assets/js/paginas/catalogos/animales.js" defer></script>
+</body>
+</html>

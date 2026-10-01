@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Especies | Mirada Salvaje</title>
+  <link rel="icon" href="/assets/img/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/vendor/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/vendor/bootstrap-icons/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="/assets/css/zoo.css">
+</head>
+<body class="cargando">
+
+  <main class="app-main" data-titulo="Especies">
+    <div class="pagina-encabezado">
+      <div>
+        <h2>Especies</h2>
+        <p>Especies que alberga el zoológico. Las dietas generales del módulo de alimentación se definen por especie.</p>
+      </div>
+      <button class="btn btn-primary" type="button" id="btnNuevo"><i class="bi bi-plus-lg me-2"></i>Nueva especie</button>
+    </div>
+
+    <section class="panel">
+      <form class="filtros" id="formFiltros">
+        <div>
+          <label class="form-label" for="fBuscar">Buscar</label>
+          <input class="form-control" id="fBuscar" name="buscar" placeholder="Nombre común o científico">
+        </div>
+        <div>
+          <label class="form-label" for="fClasificacion">Clasificación</label>
+          <select class="form-select" id="fClasificacion" name="clasificacion"></select>
+        </div>
+        <div>
+          <label class="form-label" for="fDieta">Tipo de dieta</label>
+          <select class="form-select" id="fDieta" name="tipo_dieta"></select>
+        </div>
+        <div>
+          <label class="form-label" for="fActivo">Estado</label>
+          <select class="form-select" id="fActivo" name="activo">
+            <option value="1">Activas</option>
+            <option value="0">Inactivas</option>
+            <option value="">Todas</option>
+          </select>
+        </div>
+      </form>
+      <div class="table-responsive">
+        <table class="table table-hover tabla-zoo">
+          <thead>
+            <tr>
+              <th>Especie</th>
+              <th>Clasificación</th>
+              <th>Dieta</th>
+              <th>Conservación (UICN)</th>
+              <th class="text-end">Animales</th>
+              <th>Estado</th>
+              <th class="text-end">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tabla"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal fade" id="modalEditar" tabindex="-1" aria-labelledby="tituloModal" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <form class="modal-content" id="formEditar" novalidate>
+        <div class="modal-header">
+          <h5 class="modal-title" id="tituloModal">Nueva especie</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <div class="alert alert-danger d-none" data-error-general role="alert"></div>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label" for="eComun">Nombre común</label>
+              <input class="form-control" id="eComun" name="nombre_comun" maxlength="100" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label" for="eCientifico">Nombre científico</label>
+              <input class="form-control fst-italic" id="eCientifico" name="nombre_cientifico" maxlength="120" required>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label" for="eClasificacion">Clasificación</label>
+              <select class="form-select" id="eClasificacion" name="clasificacion" required></select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label" for="eDieta">Tipo de dieta</label>
+              <select class="form-select" id="eDieta" name="tipo_dieta" required></select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label" for="eConservacion">Estado de conservación</label>
+              <select class="form-select" id="eConservacion" name="estado_conservacion"></select>
+            </div>
+            <div class="col-12">
+              <label class="form-label" for="eDescripcion">Descripción</label>
+              <textarea class="form-control" id="eDescripcion" name="descripcion" rows="3" maxlength="500"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Guardar especie</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js" defer></script>
+  <script src="/assets/js/core/api.js" defer></script>
+  <script src="/assets/js/core/ui.js" defer></script>
+  <script src="/assets/js/core/etiquetas.js" defer></script>
+  <script src="/assets/js/core/crud.js" defer></script>
+  <script src="/assets/js/core/layout.js" defer></script>
+  <script src="/assets/js/paginas/catalogos/especies.js" defer></script>
+</body>
+</html>
