@@ -9,7 +9,7 @@ Aplicación web con un **portal público** para visitantes (promociones y compra
 | Núcleo (autenticación, roles, usuarios, bitácora) | Mijeli | Listo |
 | Gestión de Alimentación | Mijeli | Pendiente |
 | Gestión de Limpieza | Alan | Interfaz lista, backend en desarrollo ([contrato](docs/api/limpieza.md)) |
-| Control Clínico | Daniela | Pendiente |
+| Control Clínico | Daniela | Interfaz lista, backend en desarrollo ([contrato](docs/api/clinico.md)) |
 | Gestión de Entradas y Promociones | Mario | Pendiente |
 | Base de datos (30 tablas, todos los módulos) | Mijeli | Lista |
 

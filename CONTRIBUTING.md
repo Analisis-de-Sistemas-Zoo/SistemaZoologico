@@ -223,6 +223,7 @@ La interfaz de cada módulo se construye en el núcleo para que todo el sistema 
 | Módulo | Contrato de la API |
 |---|---|
 | Limpieza | [`docs/api/limpieza.md`](docs/api/limpieza.md) |
+| Control Clínico | [`docs/api/clinico.md`](docs/api/clinico.md) |
 
 Cómo trabajar:
 
@@ -231,4 +232,4 @@ Cómo trabajar:
 3. Cada función pendiente del controlador tiene una línea `pendiente('...')` y comentarios con lo que debe hacer. Bórrala y programa la lógica.
 4. Mientras una función no esté lista, la pantalla muestra un aviso "En construcción" en lugar de fallar.
 5. **No cambies los nombres de los campos** que define el contrato: la interfaz los espera así. Si necesitas un cambio, avísale a Mijeli.
-6. Tienes un ejemplo completo en tu propio módulo (en Limpieza: insumos) para copiar el estilo.
+6. Tienes un ejemplo completo en tu propio módulo para copiar el estilo (Limpieza: insumos; Clínico: inventario).
