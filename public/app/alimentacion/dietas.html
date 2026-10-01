@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dietas | Mirada Salvaje</title>
+  <link rel="icon" href="/assets/img/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/vendor/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/vendor/bootstrap-icons/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="/assets/css/zoo.css">
+</head>
+<body class="cargando">
+
+  <main class="app-main" data-titulo="Dietas">
+    <div class="pagina-encabezado">
+      <div>
+        <h2>Dietas</h2>
+        <p>Lo que come cada especie y los animales con dieta propia. Si un animal tiene dieta propia, esa reemplaza por completo a la de su especie.</p>
+      </div>
+      <button class="btn btn-primary" type="button" id="btnNuevo"><i class="bi bi-plus-lg me-2"></i>Nueva dieta</button>
+    </div>
+
+    <section class="panel">
+      <ul class="nav nav-zoo" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tabDietas" type="button" role="tab" id="pestanaDietas">Dietas</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tabAnimales" type="button" role="tab" id="pestanaAnimales">Qué come cada animal</button>
+        </li>
+      </ul>
+
+      <div class="tab-content">
+        <div class="tab-pane fade show active" id="tabDietas" role="tabpanel">
+          <form class="filtros" id="formFiltros">
+            <div>
+              <label class="form-label" for="fBuscar">Buscar</label>
+              <input class="form-control" id="fBuscar" name="buscar" placeholder="Especie, animal o alimento">
+            </div>
+            <div>
+              <label class="form-label" for="fDestino">Para</label>
+              <select class="form-select" id="fDestino" name="destino">
+                <option value="">Especies y animales</option>
+                <option value="especie">Solo especies</option>
+                <option value="animal">Solo dietas propias</option>
+              </select>
+            </div>
+            <div>
+              <label class="form-label" for="fEspecie">Especie</label>
+              <select class="form-select" id="fEspecie" name="especie_id"></select>
+            </div>
+            <div>
+              <label class="form-label" for="fAlimento">Alimento</label>
+              <select class="form-select" id="fAlimento" name="alimento_id"></select>
+            </div>
+            <div>
+              <label class="form-label" for="fEstado">Estado</label>
+              <select class="form-select" id="fEstado" name="estado">
+                <option value="actual">Vigentes y programadas</option>
+                <option value="vigente">Vigentes</option>
+                <option value="programada">Programadas</option>
+                <option value="finalizada">Finalizadas</option>
+                <option value="">Todas</option>
+              </select>
+            </div>
+          </form>
+          <div class="table-responsive">
+            <table class="table table-hover tabla-zoo">
+              <thead>
+                <tr>
+                  <th>Para</th>
+                  <th>Alimento</th>
+                  <th>Ración</th>
+                  <th class="text-end">Al día</th>
+                  <th>Vigencia</th>
+                  <th>Estado</th>
+                  <th class="text-end">Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="tabla"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="tab-pane fade" id="tabAnimales" role="tabpanel">
+          <form class="filtros" id="formAnimales">
+            <div>
+              <label class="form-label" for="aBuscar">Animal</label>
+              <input class="form-control" id="aBuscar" name="buscar" placeholder="Nombre o código">
+            </div>
+            <div>
+              <label class="form-label" for="aJaula">Jaula</label>
+              <select class="form-select" id="aJaula" name="area_id"></select>
+            </div>
+            <div>
+              <label class="form-label" for="aEspecie">Especie</label>
+              <select class="form-select" id="aEspecie" name="especie_id"></select>
+            </div>
+            <div>
+              <label class="form-label" for="aFecha">Fecha</label>
+              <input class="form-control" type="date" id="aFecha" name="fecha">
+            </div>
+          </form>
+          <div class="p-3" id="listaAnimales" aria-live="polite"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal fade" id="modalEditar" tabindex="-1" aria-labelledby="tituloModal" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <form class="modal-content" id="formEditar" novalidate>
+        <div class="modal-header">
+          <h5 class="modal-title" id="tituloModal">Nueva dieta</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <div class="alert alert-danger d-none" data-error-general role="alert"></div>
+          <div class="alert alert-info small py-2 d-none" id="avisoReemplazo"></div>
+          <div class="row g-3">
+            <div class="col-12">
+              <span class="form-label d-block">La dieta es para</span>
+              <div class="d-flex flex-wrap gap-4">
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="destino" id="dEspecie" value="especie" checked>
+                  <label class="form-check-label" for="dEspecie">Toda una especie</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="destino" id="dAnimal" value="animal">
+                  <label class="form-check-label" for="dAnimal">Un animal en particular</label>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6" id="grupoEspecie">
+              <label class="form-label" for="dEspecieId">Especie</label>
+              <select class="form-select" id="dEspecieId" name="especie_id"></select>
+            </div>
+            <div class="col-md-6 d-none" id="grupoAnimal">
+              <label class="form-label" for="dAnimalId">Animal</label>
+              <select class="form-select" id="dAnimalId" name="animal_id"></select>
+              <div class="form-text">Sus dietas propias reemplazan todas las de su especie.</div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label" for="dAlimento">Alimento</label>
+              <select class="form-select" id="dAlimento" name="alimento_id" required></select>
+            </div>
+            <div class="col-sm-6 col-md-4">
+              <label class="form-label" for="dCantidad">Cantidad por ración</label>
+              <div class="input-group">
+                <input class="form-control" id="dCantidad" name="cantidad_racion" type="number" min="0.001" step="0.001" required>
+                <span class="input-group-text" id="dUnidad">kg</span>
+              </div>
+            </div>
+            <div class="col-sm-6 col-md-3">
+              <label class="form-label" for="dFrecuencia">Raciones al día</label>
+              <input class="form-control" id="dFrecuencia" name="frecuencia_diaria" type="number" min="1" max="12" step="1" value="1" required>
+            </div>
+            <div class="col-md-5 d-flex align-items-end">
+              <div class="small text-secondary pb-2" id="dResumen"></div>
+            </div>
+            <div class="col-12">
+              <label class="form-label" for="dIndicaciones">Indicaciones de preparación o entrega</label>
+              <input class="form-control" id="dIndicaciones" name="indicaciones" maxlength="255" placeholder="Ej. En trozos grandes, a temperatura ambiente">
+            </div>
+            <div class="col-12">
+              <label class="form-label" for="dMotivo" id="etiquetaMotivo">Motivo <span class="text-secondary fw-normal">(opcional)</span></label>
+              <input class="form-control" id="dMotivo" name="motivo" maxlength="255" placeholder="Ej. Dieta reducida durante el tratamiento digestivo">
+            </div>
+            <div class="col-sm-6">
+              <label class="form-label" for="dInicio">Desde</label>
+              <input class="form-control" id="dInicio" name="fecha_inicio" type="date" required>
+            </div>
+            <div class="col-sm-6">
+              <label class="form-label" for="dFin">Hasta <span class="text-secondary fw-normal">(opcional)</span></label>
+              <input class="form-control" id="dFin" name="fecha_fin" type="date">
+              <div class="form-text">Déjalo vacío si es permanente.</div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Guardar dieta</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js" defer></script>
+  <script src="/assets/js/core/api.js" defer></script>
+  <script src="/assets/js/core/ui.js" defer></script>
+  <script src="/assets/js/core/etiquetas.js" defer></script>
+  <script src="/assets/js/core/crud.js" defer></script>
+  <script src="/assets/js/core/layout.js" defer></script>
+  <script src="/assets/js/modulos/alimentacion/etiquetas.js" defer></script>
+  <script src="/assets/js/modulos/alimentacion/comun.js" defer></script>
+  <script src="/assets/js/modulos/alimentacion/dietas.js" defer></script>
+</body>
+</html>
