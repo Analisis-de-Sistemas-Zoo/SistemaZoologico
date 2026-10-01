@@ -158,5 +158,39 @@
     }, 1000);
   }
 
-  Zoo.reportes = { pdf, excel };
+  /**
+   * Pinta un reporte en un <tbody> usando la MISMA definición de columnas que
+   * se exporta a PDF y Excel. Cada columna puede tener `html(valor, fila)` para
+   * mostrarse distinto en pantalla (barras, estados...).
+   *   Zoo.reportes.pintar(tbody, columnas, filas, { total: { area: 'Total', programadas: 40 } });
+   */
+  function pintar(tbody, columnas, filas, { total = null, vacio = 'No hay datos en el periodo seleccionado.' } = {}) {
+    const { esc } = Zoo.ui;
+    const celda = (c, f, enTotal) => {
+      const crudo = typeof c.campo === 'function' ? c.campo(f) : f[c.campo];
+      const contenido = !enTotal && c.html ? c.html(crudo, f) : esc(c.formato ? c.formato(crudo, f) : crudo ?? '');
+      return `<td class="${c.alinear === 'right' ? 'text-end' : ''}">${contenido}</td>`;
+    };
+    if (!filas.length) {
+      tbody.innerHTML = `<tr><td colspan="${columnas.length}"><div class="tabla-vacia"><i class="bi bi-bar-chart"></i>${esc(vacio)}</div></td></tr>`;
+      return;
+    }
+    tbody.innerHTML =
+      filas.map((f) => `<tr>${columnas.map((c) => celda(c, f, false)).join('')}</tr>`).join('') +
+      (total ? `<tr class="fila-total">${columnas.map((c) => celda(c, total, true)).join('')}</tr>` : '');
+  }
+
+  /** Suma columnas numéricas de un arreglo: sumar(filas, ['programadas', 'completadas']) */
+  function sumar(filas, campos) {
+    const total = {};
+    campos.forEach((c) => (total[c] = filas.reduce((s, f) => s + Number(f[c] || 0), 0)));
+    return total;
+  }
+
+  /** Primer día del mes actual en AAAA-MM-DD */
+  function inicioDeMes() {
+    return `${Zoo.ui.hoy().slice(0, 8)}01`;
+  }
+
+  Zoo.reportes = { pdf, excel, pintar, sumar, inicioDeMes };
 })();

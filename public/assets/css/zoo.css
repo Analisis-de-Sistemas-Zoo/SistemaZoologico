@@ -461,6 +461,25 @@ body.cargando::after {
   color: #a8bcae;
 }
 
+/* ---- Función pendiente de implementar en el backend */
+.bloque-pendiente {
+  display: flex;
+  gap: 0.85rem;
+  align-items: flex-start;
+  padding: 1.1rem 1.25rem;
+  margin: 0.25rem 0;
+  border: 1px dashed #e0b56a;
+  border-radius: var(--zoo-radio);
+  background: #fffaf0;
+  color: #6d5320;
+  font-size: 0.9rem;
+}
+
+.bloque-pendiente .bi {
+  font-size: 1.4rem;
+  color: var(--zoo-papaya);
+}
+
 /* ---- Estados */
 .estado {
   display: inline-flex;
@@ -485,6 +504,7 @@ body.cargando::after {
 .estado-alerta { background: var(--zoo-papaya-suave); color: #8a5710; }
 .estado-peligro { background: #fbe3e1; color: #a1281d; }
 .estado-neutro { background: #eceff0; color: #55605a; }
+.estado-info { background: #e2edf8; color: #1f4f80; }
 
 /* ---- Tarjetas de resumen del inicio */
 .resumen {
@@ -659,6 +679,11 @@ a.resumen-item:hover {
 .modal-content {
   border: 0;
   border-radius: var(--zoo-radio-grande);
+  background-color: var(--zoo-blanco);
+}
+
+.dropdown-menu {
+  --bs-dropdown-bg: var(--zoo-blanco);
 }
 
 .modal-header {
@@ -696,4 +721,134 @@ a.resumen-item:hover {
   max-width: 40ch;
   margin: 0.75rem auto 1.5rem;
   color: var(--zoo-tinta-suave);
+}
+
+/* ================================================================
+   Lista de tareas para el teléfono (limpieza, alimentación...)
+   ================================================================ */
+.selector-dia {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.selector-dia .fecha {
+  flex: 1 1 auto;
+  text-align: center;
+  font-family: var(--zoo-fuente-titulo);
+  font-weight: 650;
+  font-size: 1.1rem;
+  color: var(--zoo-selva);
+}
+
+.lista-tareas {
+  display: grid;
+  gap: 0.85rem;
+}
+
+@media (min-width: 768px) {
+  .lista-tareas { grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr)); }
+}
+
+.tarea {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 1rem 1.1rem;
+  background: var(--zoo-blanco);
+  border: 1px solid var(--zoo-linea);
+  border-left: 5px solid #b9c4bc;
+  border-radius: var(--zoo-radio-grande);
+}
+
+.tarea.pendiente { border-left-color: #8e9a93; }
+.tarea.en_proceso { border-left-color: var(--zoo-papaya); }
+.tarea.completada { border-left-color: #4a7fb5; }
+.tarea.verificada { border-left-color: var(--zoo-hoja); }
+.tarea.rechazada { border-left-color: #c0392b; }
+.tarea.cancelada { opacity: 0.65; }
+
+.tarea-encabezado {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.tarea .hora {
+  font-family: var(--zoo-fuente-titulo);
+  font-size: 1.35rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--zoo-selva);
+}
+
+.tarea .lugar {
+  font-weight: 650;
+  font-size: 1rem;
+}
+
+.tarea .detalle {
+  color: var(--zoo-tinta-suave);
+  font-size: 0.875rem;
+}
+
+.tarea .nota {
+  padding: 0.55rem 0.7rem;
+  border-radius: var(--zoo-radio);
+  background: var(--zoo-fondo);
+  font-size: 0.85rem;
+}
+
+.tarea .nota.rechazo { background: #fbe3e1; color: #7d1f16; }
+
+.tarea .btn { padding-top: 0.6rem; padding-bottom: 0.6rem; }
+
+/* Barra de porcentaje en reportes */
+.barra-porcentaje {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 8rem;
+}
+
+.barra-porcentaje .barra {
+  flex: 1 1 auto;
+  height: 0.45rem;
+  border-radius: 999px;
+  background: var(--zoo-brote);
+  overflow: hidden;
+}
+
+.barra-porcentaje .barra span {
+  display: block;
+  height: 100%;
+  background: var(--zoo-hoja);
+}
+
+.barra-porcentaje .barra span.bajo { background: var(--zoo-papaya); }
+
+.fila-total td { font-weight: 700; background: #fafcf9; }
+
+/* Pestañas */
+.nav-zoo {
+  gap: 0.25rem;
+  padding: 0 1.25rem;
+  border-bottom: 1px solid var(--zoo-linea);
+}
+
+.nav-zoo .nav-link {
+  border: 0;
+  border-bottom: 3px solid transparent;
+  border-radius: 0;
+  color: var(--zoo-tinta-suave);
+  font-weight: 550;
+  padding: 0.85rem 0.75rem;
+}
+
+.nav-zoo .nav-link.active {
+  color: var(--zoo-selva);
+  border-bottom-color: var(--zoo-hoja);
+  background: transparent;
 }
