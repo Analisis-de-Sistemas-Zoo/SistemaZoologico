@@ -90,6 +90,18 @@
               <select class="form-select" id="uRol" name="rol_id" required></select>
               <div class="form-text" id="uRolDescripcion"></div>
             </div>
+            <div class="col-12 d-none" id="grupoVeterinario">
+              <div class="p-3 rounded" style="background: var(--zoo-brote)"><div class="row g-3">
+                <div class="col-md-5">
+                  <label class="form-label" for="uColegiado">Número de colegiado</label>
+                  <input class="form-control" id="uColegiado" name="num_colegiado" maxlength="20">
+                </div>
+                <div class="col-md-7">
+                  <label class="form-label" for="uEspecialidad">Especialidad <span class="text-secondary fw-normal">(opcional)</span></label>
+                  <input class="form-control" id="uEspecialidad" name="especialidad" maxlength="100">
+                </div>
+              </div></div>
+            </div>
             <div class="col-md-6" id="grupoPassword">
               <label class="form-label" for="uPassword">Contraseña inicial</label>
               <input class="form-control" id="uPassword" name="password" type="password" autocomplete="new-password" required>

@@ -29,6 +29,11 @@ Zoo.listo(async ({ usuario: yo }) => {
   rolSelect.addEventListener('change', () => {
     const rol = roles.find((r) => String(r.id) === rolSelect.value);
     document.getElementById('uRolDescripcion').textContent = rol?.descripcion || '';
+    // Los datos profesionales solo aplican al rol veterinario.
+    const esVeterinario = rol?.codigo === 'veterinario';
+    document.getElementById('grupoVeterinario').classList.toggle('d-none', !esVeterinario);
+    document.getElementById('uColegiado').disabled = !esVeterinario;
+    document.getElementById('uEspecialidad').disabled = !esVeterinario;
   });
 
   // ------------------------------------------------------------------ Listado
@@ -56,7 +61,7 @@ Zoo.listo(async ({ usuario: yo }) => {
       <tr>
         <td><div class="fw-semibold">${esc(u.nombres)} ${esc(u.apellidos)}</div><div class="small text-secondary">${esc(u.correo)}</div></td>
         <td>${esc(u.usuario)}</td>
-        <td>${esc(u.rol_nombre)}</td>
+        <td>${esc(u.rol_nombre)}${u.rol === 'veterinario' && u.num_colegiado ? `<div class="small text-secondary">Col. ${esc(u.num_colegiado)}</div>` : ''}</td>
         <td>${estadoHtml(u)}</td>
         <td>${u.ultimo_acceso ? esc(Zoo.ui.fechaHora(u.ultimo_acceso)) : '<span class="text-secondary">Nunca</span>'}</td>
         <td class="acciones">
