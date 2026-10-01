@@ -60,6 +60,17 @@ function fecha(campo, { opcional = false } = {}) {
     .customSanitizer((v) => (v ? String(v).slice(0, 10) : v));
 }
 
+/** Fecha y hora (acepta el valor de <input type="datetime-local">). Queda como 'AAAA-MM-DD HH:MM:SS'. */
+function fechaHora(campo, { opcional = false } = {}) {
+  return opcionalSi(body(campo), opcional)
+    .matches(/^\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}(:\d{2})?$/).withMessage('Ingresa una fecha y hora válidas.')
+    .customSanitizer((v) => {
+      if (!v) return v;
+      const [f, h] = String(v).replace('T', ' ').split(' ');
+      return `${f} ${h.length === 5 ? `${h}:00` : h}`;
+    });
+}
+
 /** Hora en formato HH:MM o HH:MM:SS. */
 function hora(campo, { opcional = false } = {}) {
   return opcionalSi(body(campo), opcional)
@@ -86,6 +97,6 @@ const filtroActivo = () => query('activo').optional({ values: 'falsy' }).isIn(['
 const filtroFecha = (campo) => query(campo).optional({ values: 'falsy' }).isISO8601();
 
 module.exports = {
-  texto, id, entero, decimal, enumerado, fecha, hora, booleano, correo,
+  texto, id, entero, decimal, enumerado, fecha, fechaHora, hora, booleano, correo,
   idParam, filtroTexto, filtroId, filtroEnum, filtroActivo, filtroFecha,
 };
