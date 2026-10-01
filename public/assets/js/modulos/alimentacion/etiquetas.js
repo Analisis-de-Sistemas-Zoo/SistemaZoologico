@@ -37,3 +37,15 @@ Zoo.etiquetas.agregar(
 
 Zoo.etiquetas.agregar('diaSemana', { lun: 'Lunes', mar: 'Martes', mie: 'Miércoles', jue: 'Jueves', vie: 'Viernes', sab: 'Sábado', dom: 'Domingo' });
 Zoo.etiquetas.agregar('diaCorto', { lun: 'L', mar: 'M', mie: 'X', jue: 'J', vie: 'V', sab: 'S', dom: 'D' });
+
+Zoo.etiquetas.agregar(
+  'estadoTurno',
+  { completo: 'Completo', parcial: 'En proceso', pendiente: 'Pendiente', atrasado: 'Atrasado', no_registrado: 'Sin registrar' },
+  { completo: 'ok', parcial: 'info', pendiente: 'neutro', atrasado: 'peligro', no_registrado: 'peligro' }
+);
+
+Zoo.etiquetas.agregar(
+  'consumo',
+  { completo: 'Comió todo', parcial: 'Comió una parte', nulo: 'No comió' },
+  { completo: 'ok', parcial: 'alerta', nulo: 'peligro' }
+);
