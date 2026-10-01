@@ -10,7 +10,7 @@ Aplicación web con un **portal público** para visitantes (promociones y compra
 | Gestión de Alimentación | Mijeli | Pendiente |
 | Gestión de Limpieza | Alan | Interfaz lista, backend en desarrollo ([contrato](docs/api/limpieza.md)) |
 | Control Clínico | Daniela | Interfaz lista, backend en desarrollo ([contrato](docs/api/clinico.md)) |
-| Gestión de Entradas y Promociones | Mario | Pendiente |
+| Gestión de Entradas y Promociones | Mario | Interfaz lista, backend en desarrollo ([contrato](docs/api/entradas.md)) |
 | Base de datos (30 tablas, todos los módulos) | Mijeli | Lista |
 
 ---
@@ -134,6 +134,7 @@ zoologico-mirada-salvaje/
 │   ├── index.html               Portal público (sin sesión)
 │   ├── login.html               Acceso del personal
 │   ├── 403.html  404.html
+│   ├── entradas/                comprar.html  mis-entradas.html (portal de compra, sin sesión)
 │   ├── app/                     Páginas protegidas (el servidor exige sesión y permiso)
 │   │   ├── dashboard.html  perfil.html
 │   │   ├── admin/               usuarios.html  bitacora.html
