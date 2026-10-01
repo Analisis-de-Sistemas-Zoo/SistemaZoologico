@@ -7,7 +7,7 @@ Aplicación web con un **portal público** para visitantes (promociones y compra
 | Módulo | Responsable | Estado |
 |---|---|---|
 | Núcleo (autenticación, roles, usuarios, bitácora) | Mijeli | Listo |
-| Gestión de Alimentación | Mijeli | En desarrollo: inventario, lotes y proveedores listos ([documentación](docs/api/alimentacion.md)) |
+| Gestión de Alimentación | Mijeli | En desarrollo: inventario, proveedores, dietas y horarios listos ([documentación](docs/api/alimentacion.md)) |
 | Gestión de Limpieza | Alan | Interfaz lista, backend en desarrollo ([contrato](docs/api/limpieza.md)) |
 | Control Clínico | Daniela | Interfaz lista, backend en desarrollo ([contrato](docs/api/clinico.md)) |
 | Gestión de Entradas y Promociones | Mario | Interfaz lista, backend en desarrollo ([contrato](docs/api/entradas.md)) |

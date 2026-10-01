@@ -15,7 +15,8 @@ Responsable: **Mijeli**. A diferencia de los otros módulos, este se programa co
 | 4A | Entradas por compra (lotes), corrección de datos, mermas e historial | ✅ |
 | 4A | Proveedores y sus entregas | ✅ |
 | 4A | Tarjetas del inicio (alertas de inventario) | ✅ |
-| 4B | Dietas y horarios | ⏳ |
+| 4B | Dietas por especie o por animal, qué come cada animal | ✅ |
+| 4B | Horarios por jaula y resumen de cobertura | ✅ |
 | 4C | Raciones del día, reportes | ⏳ |
 
 ## Permisos
@@ -25,6 +26,10 @@ Responsable: **Mijeli**. A diferencia de los otros módulos, este se programa co
 | `alimentacion.ver` | Administrador, director, veterinario, cuidador, encargado de bodega |
 | `alimentacion.inventario.ver` | Administrador, director, veterinario, encargado de bodega |
 | `alimentacion.inventario.gestionar` | Administrador, encargado de bodega |
+| `alimentacion.dietas.ver` | Administrador, director, veterinario, cuidador |
+| `alimentacion.dietas.gestionar` | Veterinario (el que esté en sesión queda como responsable) |
+| `alimentacion.horarios.ver` | Administrador, director, veterinario, cuidador |
+| `alimentacion.horarios.gestionar` | Administrador, veterinario |
 
 El director solo consulta.
 
@@ -137,5 +142,91 @@ Las entregas de un proveedor se consultan con `GET /lotes?proveedor_id=1`.
 
 ---
 
+
+---
+
+## Dietas
+
+### Reglas
+1. Una dieta es para **una especie** o para **un animal**, nunca para ambos (`destino`).
+2. **Vigente en una fecha F:** `activa = 1`, `fecha_inicio <= F` y `fecha_fin` vacía o `>= F`.
+3. **Las dietas propias reemplazan a las de la especie:** si un animal tiene al menos una dieta propia vigente, no se le aplica ninguna de su especie.
+4. Una dieta propia exige `motivo` (por qué el animal necesita algo distinto).
+5. No puede haber dos dietas activas del mismo destino y alimento con fechas que se crucen.
+6. **Cambiar una dieta conserva el historial:** si todavía no tiene raciones registradas, se corrige directamente. Si ya tiene, se finaliza hoy y se crea una dieta nueva desde hoy con los cambios.
+7. Finalizar una dieta la deja de aplicar desde hoy (`activa = 0`, `fecha_fin = hoy`).
+8. Solo un usuario que esté en la tabla `veterinario` puede registrar o cambiar dietas (403 si no).
+
+### `GET /dietas` (`dietas.ver`)
+Filtros: `buscar` (especie, animal o alimento), `destino` (`especie` | `animal`), `especie_id` (incluye las dietas propias de animales de esa especie), `animal_id`, `alimento_id`, `estado` (`vigente` | `programada` | `finalizada` | `actual` = vigentes y programadas).
+```json
+[ { "id": 1, "especie_id": 1, "animal_id": null, "alimento_id": 1, "cantidad_racion": 4, "frecuencia_diaria": 1,
+    "indicaciones": "En trozos grandes", "motivo": null, "veterinario_id": 3, "fecha_inicio": "2026-08-02", "fecha_fin": null, "activa": 1,
+    "destino": "especie", "especie": "Jaguar", "especie_ref_id": 1, "animal": null, "animal_codigo": null, "area": null,
+    "alimento": "Carne de res", "categoria_alimento": "carne", "unidad_medida": "kg", "veterinario": "Patricia Ortiz Ramírez",
+    "racion_diaria": 4, "estado": "vigente", "raciones_registradas": 4, "animales_aplica": 2 } ]
+```
+`animales_aplica`: en dietas de especie, cuántos animales activos de la especie la usan hoy (los que no tienen dieta propia).
+
+### `GET /dietas/por-animal?fecha=&area_id=&especie_id=&animal_id=&buscar=` (`dietas.ver`)
+Qué come cada animal activo en la fecha (hoy por defecto), ordenado por jaula:
+```json
+[ { "id": 9, "codigo": "ANI-0009", "nombre": "Simba", "especie_id": 6, "especie": "León", "area_id": 5, "area": "Recinto de leones",
+    "estado_salud": "en_tratamiento", "peso_kg": 190, "origen": "animal",
+    "dietas": [ { "animal_id": 9, "dieta_id": 11, "alimento_id": 1, "alimento": "Carne de res", "unidad_medida": "kg",
+                  "cantidad_racion": 4.5, "frecuencia_diaria": 1, "racion_diaria": 4.5, "indicaciones": "Ración reducida, sin hueso",
+                  "motivo": "Dieta reducida durante tratamiento digestivo", "fecha_inicio": "2026-09-24", "fecha_fin": null,
+                  "origen": "animal", "veterinario": "Patricia Ortiz Ramírez" } ] } ]
+```
+`origen` es `animal`, `especie` o `null` (sin dieta vigente).
+
+### `POST /dietas` y `PUT /dietas/:id` (`dietas.gestionar`)
+```json
+{ "destino": "animal", "animal_id": 4, "alimento_id": 4, "cantidad_racion": 0.8, "frecuencia_diaria": 3,
+  "indicaciones": null, "motivo": "En observación: raciones pequeñas y frecuentes", "fecha_inicio": "2026-10-01", "fecha_fin": null }
+```
+Con `destino: "especie"` se envía `especie_id` en lugar de `animal_id`.
+- 422 si: la especie o el animal no están activos, el alimento está inactivo, falta el motivo de una dieta propia, la fecha final es anterior al inicio o ya pasó, o se cruza con otra dieta del mismo destino y alimento.
+- `PUT` responde `{ id, reemplazada }`. Si `reemplazada` es `true`, `id` es la dieta nueva. 409 si la dieta ya estaba finalizada.
+
+### `PATCH /dietas/:id/finalizar` (`dietas.gestionar`)
+`{ "motivo": "Ya se recuperó" }` (opcional, queda en la bitácora). 409 si ya estaba finalizada.
+
+---
+
+## Horarios de alimentación
+
+### Reglas
+1. Cada horario es de una jaula activa (`area.tipo = 'jaula'`), a una hora, ciertos días (`dias`, al menos uno) y con un cuidador activo responsable.
+2. Una jaula no puede tener dos horarios a la misma hora.
+3. **Una dieta con `frecuencia_diaria = N` se sirve en los primeros N horarios del día** de la jaula del animal. Por eso cada jaula necesita, los días que se alimenta, al menos tantos horarios como la mayor frecuencia de sus dietas.
+4. No se puede activar un horario cuyo cuidador está inactivo (409); primero se cambia el cuidador.
+
+### `GET /horarios` (`horarios.ver`)
+Filtros: `area_id`, `cuidador_id`, `dia` (`lun` … `dom`), `activo`.
+```json
+[ { "id": 4, "area_id": 3, "area": "Pantano de cocodrilos", "habitat": "Herpetario", "hora": "11:00", "dias": ["mar", "vie"],
+    "cuidador_id": 10, "cuidador": "Andrea Pineda Morales", "cuidador_activo": 1,
+    "observaciones": "Alimentar desde la plataforma de seguridad", "activo": 1, "animales": 1 } ]
+```
+
+### `POST /horarios`, `PUT /horarios/:id`, `PATCH /horarios/:id/estado` (`horarios.gestionar`)
+```json
+{ "area_id": 2, "hora": "17:30", "dias": ["sab", "dom"], "cuidador_id": 4, "observaciones": null }
+```
+Los días se guardan ordenados y sin repetir.
+
+### `GET /horarios/cobertura` (`horarios.ver`)
+Una fila por jaula activa con las dietas vigentes de hoy:
+```json
+[ { "area_id": 2, "area": "Isla de monos araña", "habitat": "Selva Tropical", "animales": 2, "animales_con_dieta": 2,
+    "raciones_por_dia": 3, "horarios_por_dia": { "lun": 2, "mar": 2, "mie": 2, "jue": 2, "vie": 2, "sab": 2, "dom": 2 },
+    "avisos": [ "Las dietas piden 3 raciones al día, pero todos los días solo hay 2 horarios." ] } ]
+```
+Avisos posibles: animales sin dieta vigente, animales con dieta pero ningún horario, y días con menos horarios que raciones. Los días sin ningún horario se consideran ayuno programado (por ejemplo, los cocodrilos comen martes y viernes).
+
+---
+
 ## Tarjetas del inicio
-Para quien tiene `alimentacion.inventario.ver`: alimentos bajo el mínimo, lotes por vencer y lotes vencidos con existencia, cada una con enlace a la pantalla filtrada.
+- Con `alimentacion.inventario.ver`: alimentos bajo el mínimo, lotes por vencer y lotes vencidos con existencia.
+- Con `alimentacion.horarios.gestionar`: jaulas con avisos de alimentación.
