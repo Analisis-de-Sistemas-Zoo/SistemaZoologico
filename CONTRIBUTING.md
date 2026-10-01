@@ -215,3 +215,20 @@ Si necesitas cambiar una tabla de tu módulo:
 2. Ejecuta `npm run db:reset` para recrear la BD.
 3. Avisa al equipo en el Pull Request, porque todos tendrán que hacer `npm run db:reset` al recibir tu cambio.
 4. Si el cambio afecta el diagrama, actualiza también `docs/modelo-er.dbml`.
+
+## 9. Interfaz ya construida y backend pendiente
+
+La interfaz de cada módulo se construye en el núcleo para que todo el sistema se vea igual. A cada responsable le toca **programar el backend** siguiendo el contrato de su módulo:
+
+| Módulo | Contrato de la API |
+|---|---|
+| Limpieza | [`docs/api/limpieza.md`](docs/api/limpieza.md) |
+
+Cómo trabajar:
+
+1. Lee el contrato de tu módulo: dice qué recibe cada ruta, qué reglas aplica y qué devuelve exactamente.
+2. Las rutas y sus validaciones ya existen en `server/modulos/<modulo>/<modulo>.routes.js`.
+3. Cada función pendiente del controlador tiene una línea `pendiente('...')` y comentarios con lo que debe hacer. Bórrala y programa la lógica.
+4. Mientras una función no esté lista, la pantalla muestra un aviso "En construcción" en lugar de fallar.
+5. **No cambies los nombres de los campos** que define el contrato: la interfaz los espera así. Si necesitas un cambio, avísale a Mijeli.
+6. Tienes un ejemplo completo en tu propio módulo (en Limpieza: insumos) para copiar el estilo.
