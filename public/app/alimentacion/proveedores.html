@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Proveedores | Mirada Salvaje</title>
+  <link rel="icon" href="/assets/img/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/vendor/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/vendor/bootstrap-icons/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="/assets/css/zoo.css">
+</head>
+<body class="cargando">
+
+  <main class="app-main" data-titulo="Proveedores de alimentos">
+    <div class="pagina-encabezado">
+      <div>
+        <h2>Proveedores de alimentos</h2>
+        <p>Empresas a las que se compra el alimento de los animales, con el historial de sus entregas.</p>
+      </div>
+      <button class="btn btn-primary" type="button" id="btnNuevo"><i class="bi bi-plus-lg me-2"></i>Nuevo proveedor</button>
+    </div>
+
+    <section class="panel">
+      <form class="filtros" id="formFiltros">
+        <div>
+          <label class="form-label" for="fBuscar">Buscar</label>
+          <input class="form-control" id="fBuscar" name="buscar" placeholder="Nombre, NIT o contacto">
+        </div>
+        <div>
+          <label class="form-label" for="fActivo">Estado</label>
+          <select class="form-select" id="fActivo" name="activo">
+            <option value="1">Activos</option>
+            <option value="0">Inactivos</option>
+            <option value="">Todos</option>
+          </select>
+        </div>
+      </form>
+      <div class="table-responsive">
+        <table class="table table-hover tabla-zoo">
+          <thead>
+            <tr>
+              <th>Proveedor</th>
+              <th>Contacto</th>
+              <th class="text-end">Entregas</th>
+              <th>Última entrega</th>
+              <th class="text-end">Total comprado</th>
+              <th>Estado</th>
+              <th class="text-end">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tabla"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal fade" id="modalEditar" tabindex="-1" aria-labelledby="tituloModal" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <form class="modal-content" id="formEditar" novalidate>
+        <div class="modal-header">
+          <h5 class="modal-title" id="tituloModal">Nuevo proveedor</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <div class="alert alert-danger d-none" data-error-general role="alert"></div>
+          <div class="row g-3">
+            <div class="col-md-8">
+              <label class="form-label" for="pNombre">Nombre o razón social</label>
+              <input class="form-control" id="pNombre" name="nombre" maxlength="120" required>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label" for="pNit">NIT</label>
+              <input class="form-control text-uppercase" id="pNit" name="nit" maxlength="20" placeholder="1234567-8">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label" for="pContacto">Persona de contacto</label>
+              <input class="form-control" id="pContacto" name="contacto" maxlength="100">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label" for="pTelefono">Teléfono</label>
+              <input class="form-control" type="tel" id="pTelefono" name="telefono" maxlength="20">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label" for="pCorreo">Correo</label>
+              <input class="form-control" type="email" id="pCorreo" name="correo" maxlength="120">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label" for="pDireccion">Dirección</label>
+              <input class="form-control" id="pDireccion" name="direccion" maxlength="200">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Guardar proveedor</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Entregas del proveedor -->
+  <div class="modal fade" id="modalCompras" tabindex="-1" aria-labelledby="tituloCompras" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="tituloCompras">Entregas</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body p-0">
+          <div class="table-responsive">
+            <table class="table tabla-zoo mb-0">
+              <thead><tr><th>Ingreso</th><th>Alimento</th><th>Lote</th><th>Factura</th><th class="text-end">Cantidad</th><th class="text-end">Costo unitario</th><th class="text-end">Total</th><th>Estado</th></tr></thead>
+              <tbody id="tablaCompras"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js" defer></script>
+  <script src="/assets/js/core/api.js" defer></script>
+  <script src="/assets/js/core/ui.js" defer></script>
+  <script src="/assets/js/core/etiquetas.js" defer></script>
+  <script src="/assets/js/core/crud.js" defer></script>
+  <script src="/assets/js/core/layout.js" defer></script>
+  <script src="/assets/js/modulos/alimentacion/etiquetas.js" defer></script>
+  <script src="/assets/js/modulos/alimentacion/comun.js" defer></script>
+  <script src="/assets/js/modulos/alimentacion/proveedores.js" defer></script>
+</body>
+</html>
