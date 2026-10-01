@@ -17,7 +17,8 @@ Responsable: **Mijeli**. A diferencia de los otros módulos, este se programa co
 | 4A | Tarjetas del inicio (alertas de inventario) | ✅ |
 | 4B | Dietas por especie o por animal, qué come cada animal | ✅ |
 | 4B | Horarios por jaula y resumen de cobertura | ✅ |
-| 4C | Raciones del día, reportes | ⏳ |
+| 4C | Raciones del día con descuento FEFO y deshacer | ✅ |
+| 4C | Reportes (consumo, especies, cumplimiento, compras, vencimientos) | ✅ |
 
 ## Permisos
 
@@ -30,6 +31,9 @@ Responsable: **Mijeli**. A diferencia de los otros módulos, este se programa co
 | `alimentacion.dietas.gestionar` | Veterinario (el que esté en sesión queda como responsable) |
 | `alimentacion.horarios.ver` | Administrador, director, veterinario, cuidador |
 | `alimentacion.horarios.gestionar` | Administrador, veterinario |
+| `alimentacion.raciones.ver` | Administrador, director, veterinario, cuidador |
+| `alimentacion.raciones.registrar` | Cuidador |
+| `alimentacion.reportes.ver` | Administrador, director, veterinario, encargado de bodega |
 
 El director solo consulta.
 
@@ -201,6 +205,7 @@ Con `destino: "especie"` se envía `especie_id` en lugar de `animal_id`.
 2. Una jaula no puede tener dos horarios a la misma hora.
 3. **Una dieta con `frecuencia_diaria = N` se sirve en los primeros N horarios del día** de la jaula del animal. Por eso cada jaula necesita, los días que se alimenta, al menos tantos horarios como la mayor frecuencia de sus dietas.
 4. No se puede activar un horario cuyo cuidador está inactivo (409); primero se cambia el cuidador.
+5. Un horario solo programa raciones desde el día en que se creó (`creado_en`).
 
 ### `GET /horarios` (`horarios.ver`)
 Filtros: `area_id`, `cuidador_id`, `dia` (`lun` … `dom`), `activo`.
@@ -225,8 +230,74 @@ Una fila por jaula activa con las dietas vigentes de hoy:
 ```
 Avisos posibles: animales sin dieta vigente, animales con dieta pero ningún horario, y días con menos horarios que raciones. Los días sin ningún horario se consideran ayuno programado (por ejemplo, los cocodrilos comen martes y viernes).
 
+
+---
+
+## Raciones del día
+
+### Cómo se arma un día
+1. Horarios activos de cada jaula que tocan ese día de la semana y ya existían ese día, numerados por hora: 1.ª, 2.ª, 3.ª comida del día.
+2. Dietas vigentes de cada animal activo de la jaula en esa fecha (las propias reemplazan a las de la especie).
+3. Una dieta con `frecuencia_diaria = N` aparece en las comidas 1 a N.
+4. Estado del turno: `completo`, `parcial` (algunas registradas), `pendiente`, `atrasado` (hoy, una hora después de su hora y sin completar) o `no_registrado` (días anteriores).
+
+### `GET /raciones?fecha=&area_id=&cuidador_id=` (`raciones.ver`)
+Fecha por defecto hoy; no acepta fechas futuras. La pantalla del cuidador envía su propio `cuidador_id`.
+```json
+{ "fecha": "2026-10-01", "es_hoy": true,
+  "resumen": { "turnos": 7, "programadas": 23, "registradas": 5, "pendientes": 18, "turnos_atrasados": 0 },
+  "turnos": [ { "horario_id": 8, "area_id": 6, "area": "Gran aviario", "habitat": "Aviario Quetzal", "hora": "07:00",
+                "cuidador_id": 4, "cuidador": "Carlos Hernández López", "observaciones": null, "numero": 1,
+                "total": 5, "registradas": 5, "estado": "completo",
+                "animales": [ { "animal_id": 13, "nombre": "Arcoíris", "codigo": "ANI-0013", "especie": "Tucán pico iris", "estado_salud": "sano",
+                                "raciones": [ { "dieta_id": 14, "alimento_id": 4, "alimento": "Frutas mixtas", "unidad_medida": "kg",
+                                                "cantidad_racion": 0.12, "frecuencia_diaria": 2, "indicaciones": "Trozos pequeños", "origen": "especie",
+                                                "existencia": 61.45,
+                                                "registro": { "id": 59, "usuario_id": 4, "usuario": "Carlos Hernández López", "hora": "08:54",
+                                                              "cantidad_suministrada": 0.12, "consumo": "parcial", "observaciones": "Dejó la papaya" } } ] } ] } ] }
+```
+`registro` es `null` mientras la ración no se registra. `existencia` es lo que hay del alimento en lotes sin vencer.
+
+### `POST /raciones` (`raciones.registrar`)
+Una o varias raciones de **un turno de hoy**, todo o nada:
+```json
+{ "horario_id": 8,
+  "items": [ { "animal_id": 13, "dieta_id": 14, "cantidad_suministrada": 0.12, "consumo": "parcial", "observaciones": "Dejó la papaya" },
+             { "animal_id": 12, "dieta_id": 12, "cantidad_suministrada": 0.15, "consumo": "completo" } ] }
+```
+`consumo`: `completo` | `parcial` | `nulo`. La fecha y la hora las pone el servidor; el usuario es el de la sesión (cualquier cuidador puede cubrir el turno de un compañero).
+1. 422 si el turno no toca hoy o la ración no está programada en ese turno; 409 si ya estaba registrada.
+2. En una transacción se bloquean (`FOR UPDATE`) los lotes sin vencer del alimento en orden FEFO (vence primero, los que no vencen al final). Si la suma no alcanza responde **409** con lo que hay en bodega.
+3. Por cada ración: inserta `registro_alimentacion`, descuenta de uno o varios lotes y crea un movimiento `consumo` por lote usado.
+Responde **201**:
+```json
+[ { "id": 24, "animal_id": 2, "dieta_id": 1, "lotes": [ { "lote_id": 1, "numero_lote": "CR-001", "cantidad": 15 },
+                                                        { "lote_id": 14, "numero_lote": "CR-777", "cantidad": 5 } ] } ]
+```
+
+### `DELETE /raciones/:id` (`raciones.registrar`)
+Solo quien la registró y el mismo día. Devuelve a cada lote lo que se le descontó y borra la ración y sus movimientos (queda en la bitácora).
+
+---
+
+## Reportes (`reportes.ver`)
+Reciben `desde` y `hasta`; la pantalla usa la última semana por defecto.
+
+| Ruta | Una fila por | Campos |
+|---|---|---|
+| `GET /reportes/consumo-alimentos` | alimento con movimientos | `alimento`, `categoria`, `unidad_medida`, `raciones`, `entradas`, `consumido`, `merma`, `costo_consumo`, `costo_merma` (costo según el lote) |
+| `GET /reportes/consumo-especies` | especie y alimento | `especie`, `alimento`, `unidad_medida`, `animales`, `raciones`, `cantidad`, `parciales`, `rechazadas` |
+| `GET /reportes/cumplimiento` | jaula | `area`, `cuidadores`, `turnos`, `programadas`, `registradas`, `pendientes`, `parciales`, `rechazadas`, `cumplimiento` (%). Máximo 62 días; de hoy solo cuentan los turnos cuya hora ya pasó |
+| `GET /reportes/compras` | proveedor | `proveedor`, `nit`, `entregas`, `alimentos`, `detalle`, `ultima_entrega`, `total` (por fecha de ingreso del lote) |
+| `GET /reportes/vencimientos?dias=30` | lote con existencia | `numero_lote`, `alimento`, `proveedor`, `fecha_vencimiento`, `dias_para_vencer`, `cantidad_disponible`, `valor`, `estado` (`vencido` o `por_vencer`). No usa el rango |
+
 ---
 
 ## Tarjetas del inicio
+- Cuidador: sus raciones pendientes de hoy y sus turnos atrasados.
+- Administrador, director y veterinario: raciones pendientes y turnos atrasados de todo el zoológico.
 - Con `alimentacion.inventario.ver`: alimentos bajo el mínimo, lotes por vencer y lotes vencidos con existencia.
 - Con `alimentacion.horarios.gestionar`: jaulas con avisos de alimentación.
+
+## Datos de prueba
+`database/20_alimentacion.sql` genera las raciones de los dos días anteriores con estas mismas reglas (con algunos turnos sin registrar y algunas raciones comidas en parte) y al final recalcula la existencia de cada lote a partir de sus movimientos.
