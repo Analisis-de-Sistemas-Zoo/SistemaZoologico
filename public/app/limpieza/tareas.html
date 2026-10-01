@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tareas de limpieza | Mirada Salvaje</title>
+  <link rel="icon" href="/assets/img/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/vendor/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/vendor/bootstrap-icons/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="/assets/css/zoo.css">
+</head>
+<body class="cargando">
+
+  <main class="app-main" data-titulo="Tareas de limpieza">
+    <div class="pagina-encabezado">
+      <div>
+        <h2>Tareas de limpieza</h2>
+        <p>Programa las tareas de cada área, asígnalas al personal y verifica las que ya se completaron.</p>
+      </div>
+      <button class="btn btn-primary" type="button" id="btnNuevo"><i class="bi bi-calendar-plus me-2"></i>Programar tarea</button>
+    </div>
+
+    <div class="resumen mb-4 d-none" id="resumenTareas"></div>
+
+    <section class="panel">
+      <form class="filtros" id="formFiltros">
+        <div>
+          <label class="form-label" for="fDesde">Desde</label>
+          <input class="form-control" type="date" id="fDesde" name="fecha_desde">
+        </div>
+        <div>
+          <label class="form-label" for="fHasta">Hasta</label>
+          <input class="form-control" type="date" id="fHasta" name="fecha_hasta">
+        </div>
+        <div>
+          <label class="form-label" for="fArea">Área</label>
+          <select class="form-select" id="fArea" name="area_id"></select>
+        </div>
+        <div>
+          <label class="form-label" for="fAsignado">Asignada a</label>
+          <select class="form-select" id="fAsignado" name="asignado_id"></select>
+        </div>
+        <div>
+          <label class="form-label" for="fEstado">Estado</label>
+          <select class="form-select" id="fEstado" name="estado"></select>
+        </div>
+      </form>
+      <div class="table-responsive">
+        <table class="table table-hover tabla-zoo">
+          <thead>
+            <tr>
+              <th>Fecha y hora</th>
+              <th>Área</th>
+              <th>Tipo</th>
+              <th>Asignada a</th>
+              <th>Estado</th>
+              <th class="text-end">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tabla"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <!-- Programar / editar -->
+  <div class="modal fade" id="modalEditar" tabindex="-1" aria-labelledby="tituloModal" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <form class="modal-content" id="formEditar" novalidate>
+        <div class="modal-header">
+          <h5 class="modal-title" id="tituloModal">Nueva tarea</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <div class="alert alert-danger d-none" data-error-general role="alert"></div>
+          <div class="row g-3">
+            <div class="col-md-7">
+              <label class="form-label" for="tArea">Área</label>
+              <select class="form-select" id="tArea" name="area_id" required></select>
+            </div>
+            <div class="col-md-5">
+              <label class="form-label" for="tTipo">Tipo de limpieza</label>
+              <select class="form-select" id="tTipo" name="tipo" required></select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label" for="tFecha">Fecha</label>
+              <input class="form-control" type="date" id="tFecha" name="fecha_programada" required>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label" for="tHora">Hora</label>
+              <input class="form-control" type="time" id="tHora" name="hora_programada" required>
+            </div>
+            <div class="col-md-5">
+              <label class="form-label" for="tAsignado">Asignar a</label>
+              <select class="form-select" id="tAsignado" name="asignado_id" required></select>
+            </div>
+            <div class="col-12">
+              <label class="form-label" for="tDescripcion">Indicaciones <span class="text-secondary fw-normal">(opcional)</span></label>
+              <textarea class="form-control" id="tDescripcion" name="descripcion" rows="2" maxlength="255" placeholder="Ej. Lavar comederos y retirar desechos"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Guardar tarea</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Detalle -->
+  <div class="modal fade" id="modalDetalle" tabindex="-1" aria-labelledby="tituloDetalle" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="tituloDetalle">Detalle de la tarea</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body" id="cuerpoDetalle"></div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Verificar -->
+  <div class="modal fade" id="modalVerificar" tabindex="-1" aria-labelledby="tituloVerificar" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <form class="modal-content" id="formVerificar" novalidate>
+        <div class="modal-header">
+          <h5 class="modal-title" id="tituloVerificar">Verificar tarea</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <div class="alert alert-danger d-none" data-error-general role="alert"></div>
+          <div id="resumenVerificar" class="mb-3"></div>
+          <fieldset class="mb-3">
+            <legend class="form-label">Resultado de la revisión</legend>
+            <div class="d-flex flex-wrap gap-3">
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="resultado" id="vOk" value="verificada" checked>
+                <label class="form-check-label" for="vOk">El área quedó limpia, verificar</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="resultado" id="vRechazar" value="rechazada">
+                <label class="form-check-label" for="vRechazar">Rechazar, hay que repetirla</label>
+              </div>
+            </div>
+          </fieldset>
+          <label class="form-label" for="vObservacion">Observación <span class="text-secondary fw-normal" id="vObsAyuda">(opcional)</span></label>
+          <textarea class="form-control" id="vObservacion" name="observacion" rows="2" maxlength="500"></textarea>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Guardar revisión</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js" defer></script>
+  <script src="/assets/js/core/api.js" defer></script>
+  <script src="/assets/js/core/ui.js" defer></script>
+  <script src="/assets/js/core/etiquetas.js" defer></script>
+  <script src="/assets/js/core/crud.js" defer></script>
+  <script src="/assets/js/core/layout.js" defer></script>
+  <script src="/assets/js/modulos/limpieza/etiquetas.js" defer></script>
+  <script src="/assets/js/modulos/limpieza/comun.js" defer></script>
+  <script src="/assets/js/modulos/limpieza/tareas.js" defer></script>
+</body>
+</html>
