@@ -83,6 +83,60 @@
     });
   }
 
+  // ------------------------------------------------------------ Pedir texto
+  /**
+   * Diálogo que pide un texto (motivo, observación...). Devuelve el texto o null si se cancela.
+   *   const motivo = await Zoo.ui.pedirTexto({ titulo: 'Cancelar tarea', etiqueta: 'Motivo', aceptar: 'Cancelar tarea', peligro: true });
+   */
+  function pedirTexto({ titulo, mensaje = '', etiqueta = 'Observación', aceptar = 'Aceptar', peligro = false, obligatorio = true, max = 255 } = {}) {
+    return new Promise((resolve) => {
+      const nodo = document.createElement('div');
+      nodo.className = 'modal fade';
+      nodo.tabIndex = -1;
+      nodo.innerHTML = `
+        <div class="modal-dialog modal-dialog-centered">
+          <form class="modal-content" novalidate>
+            <div class="modal-header">
+              <h5 class="modal-title">${esc(titulo)}</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+              ${mensaje ? `<p>${esc(mensaje)}</p>` : ''}
+              <label class="form-label" for="zooPedirTexto">${esc(etiqueta)}</label>
+              <textarea class="form-control" id="zooPedirTexto" rows="3" maxlength="${max}"></textarea>
+              <div class="invalid-feedback">Este campo es obligatorio.</div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-light" data-bs-dismiss="modal">Volver</button>
+              <button type="submit" class="btn ${peligro ? 'btn-danger' : 'btn-primary'}">${esc(aceptar)}</button>
+            </div>
+          </form>
+        </div>`;
+      document.body.appendChild(nodo);
+      const modal = new bootstrap.Modal(nodo);
+      const campo = nodo.querySelector('textarea');
+      let respuesta = null;
+      nodo.querySelector('form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const valor = campo.value.trim();
+        if (obligatorio && !valor) {
+          campo.classList.add('is-invalid');
+          campo.focus();
+          return;
+        }
+        respuesta = valor;
+        modal.hide();
+      });
+      nodo.addEventListener('shown.bs.modal', () => campo.focus());
+      nodo.addEventListener('hidden.bs.modal', () => {
+        modal.dispose();
+        nodo.remove();
+        resolve(respuesta);
+      });
+      modal.show();
+    });
+  }
+
   // ------------------------------------------------------------ Formularios
   function limpiarErrores(form) {
     if (!form) return;
@@ -91,9 +145,18 @@
     form.querySelectorAll('[data-error-general]').forEach((n) => n.classList.add('d-none'));
   }
 
+  /** Bloque que se muestra donde iría contenido cuyo backend aún no está programado. */
+  function pendienteHtml(mensaje = 'Esta función aún no está conectada al servidor.') {
+    return `<div class="bloque-pendiente"><i class="bi bi-cone-striped"></i><div><strong>En construcción</strong><div>${esc(mensaje)}</div></div></div>`;
+  }
+
   /** Muestra un error de la API. Si trae errores por campo, los marca en el formulario. */
   function error(err, form) {
     const mensaje = err?.message || 'Ocurrió un error inesperado.';
+    if (err?.pendiente) {
+      toast(mensaje, 'aviso', 6000);
+      return;
+    }
     if (form && err?.errores?.length) {
       limpiarErrores(form);
       let primero = null;
@@ -165,6 +228,12 @@
   }
 
   /** Pinta filas en un <tbody>. filaHtml recibe cada fila y devuelve el <tr>. */
+  /** Pinta en un <tbody> el aviso de función pendiente, ocupando todas las columnas. */
+  function tablaPendiente(tbody, err) {
+    const total = tbody.closest('table')?.querySelectorAll('thead th').length || 1;
+    tbody.innerHTML = `<tr><td colspan="${total}">${pendienteHtml(err?.message)}</td></tr>`;
+  }
+
   function tabla(tbody, filas, filaHtml, { columnas, vacio = 'No hay registros para mostrar.', icono = 'bi-inbox' } = {}) {
     if (!filas || filas.length === 0) {
       const total = columnas || tbody.closest('table')?.querySelectorAll('thead th').length || 1;
@@ -185,6 +254,11 @@
     if (!valor) return '';
     const texto = String(valor);
     return `${fecha(texto)} ${texto.slice(11, 16)}`.trim();
+  }
+
+  /** '14:30:00' -> '14:30' */
+  function hora(valor) {
+    return valor ? String(valor).slice(0, 5) : '';
   }
 
   function numero(valor, decimales = 0) {
@@ -209,7 +283,7 @@
   }
 
   Zoo.ui = {
-    esc, toast, confirmar, error, limpiarErrores, leerFormulario, llenarFormulario,
-    cargando, opciones, tabla, fecha, fechaHora, numero, moneda, hoy, iniciales,
+    esc, toast, confirmar, pedirTexto, error, limpiarErrores, leerFormulario, llenarFormulario,
+    cargando, opciones, tabla, tablaPendiente, pendienteHtml, fecha, fechaHora, numero, moneda, hoy, iniciales, hora,
   };
 })();
