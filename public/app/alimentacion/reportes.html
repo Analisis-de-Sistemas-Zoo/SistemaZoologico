@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Reportes de alimentación | Mirada Salvaje</title>
+  <link rel="icon" href="/assets/img/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/vendor/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/vendor/bootstrap-icons/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="/assets/css/zoo.css">
+</head>
+<body class="cargando">
+
+  <main class="app-main" data-titulo="Reportes de alimentación">
+    <div class="pagina-encabezado">
+      <div>
+        <h2>Reportes de alimentación</h2>
+        <p>Consumo de alimento, lo que come cada especie, cumplimiento de las raciones, compras por proveedor y lotes por vencer.</p>
+      </div>
+    </div>
+
+    <section class="panel">
+      <form class="filtros" id="formFiltros">
+        <div>
+          <label class="form-label" for="fDesde">Desde</label>
+          <input class="form-control" type="date" id="fDesde" name="desde" required>
+        </div>
+        <div>
+          <label class="form-label" for="fHasta">Hasta</label>
+          <input class="form-control" type="date" id="fHasta" name="hasta" required>
+        </div>
+        <div class="d-flex gap-2 align-items-end" style="flex: 0 0 auto">
+          <button class="btn btn-outline-primary" type="button" id="btnPdf"><i class="bi bi-file-earmark-pdf me-2"></i>PDF</button>
+          <button class="btn btn-outline-primary" type="button" id="btnExcel"><i class="bi bi-file-earmark-spreadsheet me-2"></i>Excel</button>
+        </div>
+      </form>
+
+      <ul class="nav nav-zoo" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tabConsumo" type="button" role="tab" data-reporte="consumo">Consumo por alimento</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tabEspecies" type="button" role="tab" data-reporte="especies">Por especie</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tabCumplimiento" type="button" role="tab" data-reporte="cumplimiento">Cumplimiento de raciones</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tabCompras" type="button" role="tab" data-reporte="compras">Compras por proveedor</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tabVencimientos" type="button" role="tab" data-reporte="vencimientos">Vencimientos</button>
+        </li>
+      </ul>
+
+      <p class="small text-secondary px-3 pt-3 mb-0" id="notaReporte"></p>
+      <div class="tab-content">
+        <div class="tab-pane fade show active table-responsive" id="tabConsumo" role="tabpanel">
+          <table class="table tabla-zoo"><thead><tr id="encConsumo"></tr></thead><tbody id="tablaConsumo"></tbody></table>
+        </div>
+        <div class="tab-pane fade table-responsive" id="tabEspecies" role="tabpanel">
+          <table class="table tabla-zoo"><thead><tr id="encEspecies"></tr></thead><tbody id="tablaEspecies"></tbody></table>
+        </div>
+        <div class="tab-pane fade table-responsive" id="tabCumplimiento" role="tabpanel">
+          <table class="table tabla-zoo"><thead><tr id="encCumplimiento"></tr></thead><tbody id="tablaCumplimiento"></tbody></table>
+        </div>
+        <div class="tab-pane fade table-responsive" id="tabCompras" role="tabpanel">
+          <table class="table tabla-zoo"><thead><tr id="encCompras"></tr></thead><tbody id="tablaCompras"></tbody></table>
+        </div>
+        <div class="tab-pane fade table-responsive" id="tabVencimientos" role="tabpanel">
+          <table class="table tabla-zoo"><thead><tr id="encVencimientos"></tr></thead><tbody id="tablaVencimientos"></tbody></table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js" defer></script>
+  <script src="/vendor/jspdf/jspdf.umd.min.js" defer></script>
+  <script src="/vendor/jspdf-autotable/jspdf.plugin.autotable.min.js" defer></script>
+  <script src="/vendor/exceljs/exceljs.min.js" defer></script>
+  <script src="/assets/js/core/api.js" defer></script>
+  <script src="/assets/js/core/ui.js" defer></script>
+  <script src="/assets/js/core/etiquetas.js" defer></script>
+  <script src="/assets/js/core/reportes.js" defer></script>
+  <script src="/assets/js/core/layout.js" defer></script>
+  <script src="/assets/js/modulos/alimentacion/etiquetas.js" defer></script>
+  <script src="/assets/js/modulos/alimentacion/comun.js" defer></script>
+  <script src="/assets/js/modulos/alimentacion/reportes.js" defer></script>
+</body>
+</html>
