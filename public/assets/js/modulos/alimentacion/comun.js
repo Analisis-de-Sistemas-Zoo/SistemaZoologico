@@ -45,5 +45,13 @@ window.Alimentacion = (function () {
       .join('');
   }
 
-  return { cantidad, vencimiento, movimientosHtml, opcionesAlimentos };
+  const DIAS = ['lun', 'mar', 'mie', 'jue', 'vie', 'sab', 'dom'];
+
+  /** Los 7 días como letras, resaltando los que tocan: L M X J V S D */
+  function diasHtml(dias) {
+    return `<span class="dias-semana" aria-label="${esc(dias.map((d) => E.texto('diaSemana', d)).join(', '))}">${DIAS
+      .map((d) => `<span class="${dias.includes(d) ? 'si' : ''}" aria-hidden="true">${E.texto('diaCorto', d)}</span>`).join('')}</span>`;
+  }
+
+  return { cantidad, vencimiento, movimientosHtml, opcionesAlimentos, DIAS, diasHtml };
 })();

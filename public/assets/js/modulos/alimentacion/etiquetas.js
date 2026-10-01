@@ -22,3 +22,18 @@ Zoo.etiquetas.agregar(
 );
 
 Zoo.etiquetas.agregar('alertaAlimento', { bajo_minimo: 'Bajo el mínimo', por_vencer: 'Lotes por vencer', vencido: 'Con lotes vencidos' });
+
+Zoo.etiquetas.agregar(
+  'estadoDieta',
+  { vigente: 'Vigente', programada: 'Programada', finalizada: 'Finalizada' },
+  { vigente: 'ok', programada: 'info', finalizada: 'neutro' }
+);
+
+Zoo.etiquetas.agregar(
+  'origenDieta',
+  { especie: 'Dieta de su especie', animal: 'Dieta propia' },
+  { especie: 'neutro', animal: 'info' }
+);
+
+Zoo.etiquetas.agregar('diaSemana', { lun: 'Lunes', mar: 'Martes', mie: 'Miércoles', jue: 'Jueves', vie: 'Viernes', sab: 'Sábado', dom: 'Domingo' });
+Zoo.etiquetas.agregar('diaCorto', { lun: 'L', mar: 'M', mie: 'X', jue: 'J', vie: 'V', sab: 'S', dom: 'D' });
