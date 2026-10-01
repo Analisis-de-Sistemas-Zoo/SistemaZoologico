@@ -4,16 +4,18 @@
  * Documentación: docs/api/alimentacion.md
  */
 const { Router } = require('express');
-const { body } = require('express-validator');
+const { body, query } = require('express-validator');
 const validar = require('../../middlewares/validar');
 const { requierePermiso } = require('../../middlewares/auth');
 const r = require('../../utils/reglas');
-const { CATEGORIAS_ALIMENTO, UNIDADES_ALIMENTO, ESTADOS_LOTE, ALERTAS_ALIMENTO, ESTADOS_DIETA, DIAS } = require('./constantes');
+const { CATEGORIAS_ALIMENTO, UNIDADES_ALIMENTO, ESTADOS_LOTE, ALERTAS_ALIMENTO, ESTADOS_DIETA, DIAS, CONSUMOS } = require('./constantes');
 const alimentos = require('./alimentos.controller');
 const lotes = require('./lotes.controller');
 const proveedores = require('./proveedores.controller');
 const dietas = require('./dietas.controller');
 const horarios = require('./horarios.controller');
+const raciones = require('./raciones.controller');
+const reportes = require('./reportes.controller');
 const db = require('../../config/db');
 const { ok } = require('../../utils/respuesta');
 
@@ -24,6 +26,9 @@ const verDietas = requierePermiso('alimentacion.dietas.ver');
 const gestionarDietas = requierePermiso('alimentacion.dietas.gestionar');
 const verHorarios = requierePermiso('alimentacion.horarios.ver');
 const gestionarHorarios = requierePermiso('alimentacion.horarios.gestionar');
+const verRaciones = requierePermiso('alimentacion.raciones.ver');
+const registrarRaciones = requierePermiso('alimentacion.raciones.registrar');
+const verReportes = requierePermiso('alimentacion.reportes.ver');
 
 /** GET /alimentos/opciones — lista corta para los selectores de cualquier pantalla del módulo. */
 router.get('/alimentos/opciones', async (_req, res) => {
@@ -140,5 +145,26 @@ router.get('/horarios/:id', verHorarios, validar([r.idParam()]), horarios.obtene
 router.post('/horarios', gestionarHorarios, validar(reglasHorario), horarios.crear);
 router.put('/horarios/:id', gestionarHorarios, validar([r.idParam(), ...reglasHorario]), horarios.actualizar);
 router.patch('/horarios/:id/estado', gestionarHorarios, validar([r.idParam(), r.booleano('activo')]), horarios.cambiarEstado);
+
+// ================================================================= Raciones
+router.get('/raciones', verRaciones, validar([r.filtroFecha('fecha'), r.filtroId('area_id'), r.filtroId('cuidador_id')]), raciones.listar);
+router.post('/raciones', registrarRaciones, validar([
+  r.id('horario_id', { mensaje: 'Indica el turno.' }),
+  body('items').isArray({ min: 1, max: 60 }).withMessage('Indica al menos una ración.'),
+  body('items.*.animal_id').isInt({ min: 1 }).withMessage('Animal inválido.').toInt(),
+  body('items.*.dieta_id').isInt({ min: 1 }).withMessage('Dieta inválida.').toInt(),
+  body('items.*.cantidad_suministrada').isFloat({ min: 0.001, max: 99999 }).withMessage('La cantidad debe ser mayor a 0.').toFloat(),
+  body('items.*.consumo').isIn(CONSUMOS).withMessage('Indica cuánto comió.'),
+  body('items.*.observaciones').optional({ values: 'falsy' }).isString().trim().isLength({ max: 255 }).withMessage('Máximo 255 caracteres.'),
+]), raciones.registrar);
+router.delete('/raciones/:id', registrarRaciones, validar([r.idParam()]), raciones.deshacer);
+
+// ================================================================= Reportes
+const rango = validar([r.filtroFecha('desde'), r.filtroFecha('hasta')]);
+router.get('/reportes/consumo-alimentos', verReportes, rango, reportes.consumoAlimentos);
+router.get('/reportes/consumo-especies', verReportes, rango, reportes.consumoEspecies);
+router.get('/reportes/cumplimiento', verReportes, rango, reportes.cumplimiento);
+router.get('/reportes/compras', verReportes, rango, reportes.compras);
+router.get('/reportes/vencimientos', verReportes, validar([query('dias').optional({ values: 'falsy' }).isInt({ min: 1, max: 365 })]), reportes.vencimientos);
 
 module.exports = router;

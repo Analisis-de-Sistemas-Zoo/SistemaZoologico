@@ -22,6 +22,7 @@ module.exports = {
   ESTADOS_LOTE: ['disponible', 'por_vencer', 'vencido', 'agotado'],
   ALERTAS_ALIMENTO: ['bajo_minimo', 'por_vencer', 'vencido'],
   ESTADOS_DIETA: ['vigente', 'programada', 'finalizada', 'actual'],
+  CONSUMOS: ['completo', 'parcial', 'nulo'],
   DIAS,
   hoy,
   diaSemana,
