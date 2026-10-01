@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Inventario clínico | Mirada Salvaje</title>
+  <link rel="icon" href="/assets/img/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/vendor/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/vendor/bootstrap-icons/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="/assets/css/zoo.css">
+</head>
+<body class="cargando">
+
+  <main class="app-main" data-titulo="Inventario clínico">
+    <div class="pagina-encabezado">
+      <div>
+        <h2>Inventario clínico</h2>
+        <p>Medicamentos, vacunas y vitaminas. La existencia aumenta con las entradas y baja con cada aplicación.</p>
+      </div>
+      <button class="btn btn-primary" type="button" id="btnNuevo"><i class="bi bi-plus-lg me-2"></i>Nuevo producto</button>
+    </div>
+
+    <div class="alert alert-warning d-none" id="avisoBajos" role="status"></div>
+
+    <section class="panel">
+      <form class="filtros" id="formFiltros">
+        <div>
+          <label class="form-label" for="fBuscar">Buscar</label>
+          <input class="form-control" id="fBuscar" name="buscar" placeholder="Nombre, presentación o enfermedad">
+        </div>
+        <div>
+          <label class="form-label" for="fTipo">Tipo</label>
+          <select class="form-select" id="fTipo" name="tipo"></select>
+        </div>
+        <div>
+          <label class="form-label" for="fBajo">Existencia</label>
+          <select class="form-select" id="fBajo" name="bajo_minimo">
+            <option value="">Todas</option>
+            <option value="1">Solo bajo el mínimo</option>
+          </select>
+        </div>
+        <div>
+          <label class="form-label" for="fActivo">Estado</label>
+          <select class="form-select" id="fActivo" name="activo">
+            <option value="1">Activos</option>
+            <option value="0">Inactivos</option>
+            <option value="">Todos</option>
+          </select>
+        </div>
+      </form>
+      <div class="table-responsive">
+        <table class="table table-hover tabla-zoo">
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th>Tipo</th>
+              <th class="text-end">Existencia</th>
+              <th class="text-end">Mínimo</th>
+              <th>Nivel</th>
+              <th>Estado</th>
+              <th class="text-end">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tabla"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal fade" id="modalEditar" tabindex="-1" aria-labelledby="tituloModal" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <form class="modal-content" id="formEditar" novalidate>
+        <div class="modal-header">
+          <h5 class="modal-title" id="tituloModal">Nuevo producto</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <div class="alert alert-danger d-none" data-error-general role="alert"></div>
+          <div class="row g-3">
+            <div class="col-md-4">
+              <label class="form-label" for="iTipo">Tipo</label>
+              <select class="form-select" id="iTipo" name="tipo" required></select>
+            </div>
+            <div class="col-md-8">
+              <label class="form-label" for="iNombre">Nombre</label>
+              <input class="form-control" id="iNombre" name="nombre" maxlength="100" required>
+            </div>
+            <div class="col-md-8">
+              <label class="form-label" for="iPresentacion">Presentación</label>
+              <input class="form-control" id="iPresentacion" name="presentacion" maxlength="80" placeholder="Ej. Frasco 50 ml, tabletas 500 mg">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label" for="iUnidad">Unidad de dosis</label>
+              <select class="form-select" id="iUnidad" name="unidad_medida" required></select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label" for="iMinimo">Existencia mínima</label>
+              <input class="form-control" type="number" id="iMinimo" name="stock_minimo" min="0" step="0.01" required>
+            </div>
+            <div class="col-md-4" id="grupoInicial">
+              <label class="form-label" for="iInicial">Existencia inicial</label>
+              <input class="form-control" type="number" id="iInicial" name="stock_actual" min="0" step="0.01">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label" for="iDosis">Dosis recomendada</label>
+              <input class="form-control" id="iDosis" name="dosis_recomendada" maxlength="100" placeholder="Ej. 10 mg/kg cada 12 h">
+            </div>
+            <div class="col-md-8 grupo-vacuna">
+              <label class="form-label" for="iEnfermedad">Enfermedad que previene</label>
+              <input class="form-control" id="iEnfermedad" name="enfermedad_previene" maxlength="120">
+            </div>
+            <div class="col-md-4 grupo-vacuna">
+              <label class="form-label" for="iIntervalo">Refuerzo cada (días)</label>
+              <input class="form-control" type="number" id="iIntervalo" name="intervalo_refuerzo_dias" min="1" max="3650" step="1">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Guardar producto</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal fade" id="modalMovimiento" tabindex="-1" aria-labelledby="tituloMovimiento" aria-hidden="true">
+    <div class="modal-dialog">
+      <form class="modal-content" id="formMovimiento" novalidate>
+        <div class="modal-header">
+          <h5 class="modal-title" id="tituloMovimiento">Registrar movimiento</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <div class="alert alert-danger d-none" data-error-general role="alert"></div>
+          <p class="text-secondary" id="existenciaMovimiento"></p>
+          <fieldset class="mb-3">
+            <legend class="form-label">Tipo</legend>
+            <div class="d-flex gap-3">
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="tipo" id="mEntrada" value="entrada" checked>
+                <label class="form-check-label" for="mEntrada">Entrada por compra</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="tipo" id="mMerma" value="merma">
+                <label class="form-check-label" for="mMerma">Merma (vencido o dañado)</label>
+              </div>
+            </div>
+          </fieldset>
+          <div class="row g-3">
+            <div class="col-sm-6">
+              <label class="form-label" for="mCantidad">Cantidad</label>
+              <div class="input-group">
+                <input class="form-control" type="number" id="mCantidad" name="cantidad" min="0.01" step="0.01" required>
+                <span class="input-group-text" id="mUnidad"></span>
+              </div>
+            </div>
+            <div class="col-sm-6 solo-entrada">
+              <label class="form-label" for="mLote">Número de lote</label>
+              <input class="form-control" id="mLote" name="numero_lote" maxlength="40">
+            </div>
+            <div class="col-sm-6 solo-entrada">
+              <label class="form-label" for="mVence">Vencimiento del lote</label>
+              <input class="form-control" type="date" id="mVence" name="fecha_vencimiento">
+            </div>
+            <div class="col-12">
+              <label class="form-label" for="mMotivo">Motivo o referencia</label>
+              <input class="form-control" id="mMotivo" name="motivo" maxlength="255" placeholder="Ej. Factura 1234, frasco vencido">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Registrar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal fade" id="modalHistorial" tabindex="-1" aria-labelledby="tituloHistorial" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="tituloHistorial">Historial</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body p-0">
+          <table class="table tabla-zoo">
+            <thead><tr><th>Fecha</th><th>Movimiento</th><th class="text-end">Cantidad</th><th>Detalle</th><th>Registró</th></tr></thead>
+            <tbody id="tablaHistorial"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js" defer></script>
+  <script src="/assets/js/core/api.js" defer></script>
+  <script src="/assets/js/core/ui.js" defer></script>
+  <script src="/assets/js/core/etiquetas.js" defer></script>
+  <script src="/assets/js/core/crud.js" defer></script>
+  <script src="/assets/js/core/layout.js" defer></script>
+  <script src="/assets/js/modulos/clinico/etiquetas.js" defer></script>
+  <script src="/assets/js/modulos/clinico/comun.js" defer></script>
+  <script src="/assets/js/modulos/clinico/inventario.js" defer></script>
+</body>
+</html>

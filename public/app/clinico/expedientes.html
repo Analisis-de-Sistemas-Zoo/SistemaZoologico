@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Expedientes | Mirada Salvaje</title>
+  <link rel="icon" href="/assets/img/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/vendor/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/vendor/bootstrap-icons/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="/assets/css/zoo.css">
+</head>
+<body class="cargando">
+
+  <main class="app-main" data-titulo="Expedientes">
+    <div class="pagina-encabezado">
+      <div>
+        <h2>Expedientes clínicos</h2>
+        <p>Estado de salud de cada animal, su última consulta y las dosis que tiene pendientes.</p>
+      </div>
+    </div>
+
+    <section class="panel">
+      <form class="filtros" id="formFiltros">
+        <div>
+          <label class="form-label" for="fBuscar">Buscar</label>
+          <input class="form-control" id="fBuscar" name="buscar" placeholder="Nombre o código">
+        </div>
+        <div>
+          <label class="form-label" for="fEspecie">Especie</label>
+          <select class="form-select" id="fEspecie" name="especie_id"></select>
+        </div>
+        <div>
+          <label class="form-label" for="fSalud">Estado de salud</label>
+          <select class="form-select" id="fSalud" name="estado_salud"></select>
+        </div>
+      </form>
+      <div class="table-responsive">
+        <table class="table table-hover tabla-zoo">
+          <thead>
+            <tr>
+              <th>Animal</th>
+              <th>Jaula</th>
+              <th>Salud</th>
+              <th>Última consulta</th>
+              <th>Próxima revisión</th>
+              <th>Dosis pendientes</th>
+              <th class="text-end">Expediente</th>
+            </tr>
+          </thead>
+          <tbody id="tabla"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js" defer></script>
+  <script src="/assets/js/core/api.js" defer></script>
+  <script src="/assets/js/core/ui.js" defer></script>
+  <script src="/assets/js/core/etiquetas.js" defer></script>
+  <script src="/assets/js/core/crud.js" defer></script>
+  <script src="/assets/js/core/layout.js" defer></script>
+  <script src="/assets/js/modulos/clinico/etiquetas.js" defer></script>
+  <script src="/assets/js/modulos/clinico/comun.js" defer></script>
+  <script src="/assets/js/modulos/clinico/expedientes.js" defer></script>
+</body>
+</html>
