@@ -31,6 +31,8 @@
           ${p.descuento_porcentaje ? `<div class="descuento">-${esc(Zoo.ui.numero(p.descuento_porcentaje))}%</div>` : ''}
           <h3>${esc(p.nombre)}</h3>
           <p>${esc(p.descripcion || '')}</p>
+          ${p.tipo_entrada || Number(p.cantidad_minima) > 1 ? `<p class="small mb-0">${p.tipo_entrada ? `En entradas ${esc(p.tipo_entrada.toLowerCase())}` : 'En todas las entradas'}${Number(p.cantidad_minima) > 1 ? `, desde ${esc(p.cantidad_minima)} entradas` : ''}.</p>` : ''}
+          ${Number(p.requiere_cupon) ? '<p class="small mb-0"><i class="bi bi-ticket me-1"></i>Pide el cupón en nuestras redes sociales.</p>' : ''}
           ${p.vigente_hasta ? `<p class="small mt-2">Válida hasta el ${esc(Zoo.ui.fecha(p.vigente_hasta))}</p>` : ''}
         </article>`
       )
