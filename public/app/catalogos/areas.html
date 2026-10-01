@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Áreas y jaulas | Mirada Salvaje</title>
+  <link rel="icon" href="/assets/img/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/vendor/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/vendor/bootstrap-icons/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="/assets/css/zoo.css">
+</head>
+<body class="cargando">
+
+  <main class="app-main" data-titulo="Áreas y jaulas">
+    <div class="pagina-encabezado">
+      <div>
+        <h2>Áreas y jaulas</h2>
+        <p>Lugares físicos del zoológico. Las jaulas o recintos alojan animales; las demás áreas se usan en el módulo de limpieza.</p>
+      </div>
+      <button class="btn btn-primary" type="button" id="btnNuevo"><i class="bi bi-plus-lg me-2"></i>Nueva área</button>
+    </div>
+
+    <section class="panel">
+      <form class="filtros" id="formFiltros">
+        <div>
+          <label class="form-label" for="fBuscar">Buscar</label>
+          <input class="form-control" id="fBuscar" name="buscar" placeholder="Nombre o ubicación">
+        </div>
+        <div>
+          <label class="form-label" for="fTipo">Tipo</label>
+          <select class="form-select" id="fTipo" name="tipo"></select>
+        </div>
+        <div>
+          <label class="form-label" for="fHabitat">Hábitat</label>
+          <select class="form-select" id="fHabitat" name="habitat_id"></select>
+        </div>
+        <div>
+          <label class="form-label" for="fActivo">Estado</label>
+          <select class="form-select" id="fActivo" name="activo">
+            <option value="1">Activas</option>
+            <option value="0">Inactivas</option>
+            <option value="">Todas</option>
+          </select>
+        </div>
+      </form>
+      <div class="table-responsive">
+        <table class="table table-hover tabla-zoo">
+          <thead>
+            <tr>
+              <th>Área</th>
+              <th>Tipo</th>
+              <th>Hábitat</th>
+              <th>Ubicación</th>
+              <th class="text-end">Animales</th>
+              <th>Estado</th>
+              <th class="text-end">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tabla"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal fade" id="modalEditar" tabindex="-1" aria-labelledby="tituloModal" aria-hidden="true">
+    <div class="modal-dialog">
+      <form class="modal-content" id="formEditar" novalidate>
+        <div class="modal-header">
+          <h5 class="modal-title" id="tituloModal">Nueva área</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <div class="alert alert-danger d-none" data-error-general role="alert"></div>
+          <div class="row g-3">
+            <div class="col-12">
+              <label class="form-label" for="aNombre">Nombre</label>
+              <input class="form-control" id="aNombre" name="nombre" maxlength="80" required>
+            </div>
+            <div class="col-sm-6">
+              <label class="form-label" for="aTipo">Tipo</label>
+              <select class="form-select" id="aTipo" name="tipo" required></select>
+            </div>
+            <div class="col-sm-6">
+              <label class="form-label" for="aHabitat">Hábitat <span class="text-secondary fw-normal" id="aHabitatAyuda">(opcional)</span></label>
+              <select class="form-select" id="aHabitat" name="habitat_id"></select>
+            </div>
+            <div class="col-12">
+              <label class="form-label" for="aUbicacion">Ubicación</label>
+              <input class="form-control" id="aUbicacion" name="ubicacion" maxlength="100">
+            </div>
+            <div class="col-12">
+              <label class="form-label" for="aDescripcion">Descripción</label>
+              <textarea class="form-control" id="aDescripcion" name="descripcion" rows="2" maxlength="255"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Guardar área</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js" defer></script>
+  <script src="/assets/js/core/api.js" defer></script>
+  <script src="/assets/js/core/ui.js" defer></script>
+  <script src="/assets/js/core/etiquetas.js" defer></script>
+  <script src="/assets/js/core/crud.js" defer></script>
+  <script src="/assets/js/core/layout.js" defer></script>
+  <script src="/assets/js/paginas/catalogos/areas.js" defer></script>
+</body>
+</html>
