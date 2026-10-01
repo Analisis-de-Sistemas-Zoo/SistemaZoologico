@@ -28,6 +28,11 @@ const PERMISOS_NUCLEO = {
   'admin.ver': [ROLES.ADMIN],
   'usuarios.gestionar': [ROLES.ADMIN],
   'bitacora.ver': [ROLES.ADMIN, ROLES.DIRECTOR],
+
+  // Catálogos compartidos
+  'catalogos.ver': [ROLES.ADMIN, ROLES.DIRECTOR, ROLES.VETERINARIO, ROLES.CUIDADOR, ROLES.BODEGA, ROLES.SUP_LIMPIEZA],
+  'catalogos.ubicaciones.gestionar': [ROLES.ADMIN], // hábitats y áreas
+  'catalogos.animales.gestionar': [ROLES.ADMIN, ROLES.VETERINARIO], // especies y animales
 };
 
 /**
@@ -41,6 +46,17 @@ const MENU_NUCLEO = [
     orden: 10,
     items: [
       { texto: 'Inicio', url: '/app/dashboard.html', icono: 'bi-house-door', permiso: 'dashboard.ver' },
+    ],
+  },
+  {
+    clave: 'catalogos',
+    titulo: 'Catálogos',
+    orden: 80,
+    items: [
+      { texto: 'Animales', url: '/app/catalogos/animales.html', icono: 'bi-clipboard-heart', permiso: 'catalogos.ver' },
+      { texto: 'Especies', url: '/app/catalogos/especies.html', icono: 'bi-feather', permiso: 'catalogos.ver' },
+      { texto: 'Hábitats', url: '/app/catalogos/habitats.html', icono: 'bi-tree', permiso: 'catalogos.ver' },
+      { texto: 'Áreas y jaulas', url: '/app/catalogos/areas.html', icono: 'bi-geo-alt', permiso: 'catalogos.ver' },
     ],
   },
   {

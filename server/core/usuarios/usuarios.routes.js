@@ -3,6 +3,7 @@ const { body, param } = require('express-validator');
 const controlador = require('./usuarios.controller');
 const validar = require('../../middlewares/validar');
 const { reglaPassword } = require('../auth/politica');
+const r = require('../../utils/reglas');
 
 const router = Router();
 
@@ -18,6 +19,9 @@ const reglasDatos = [
     .matches(/^[a-z0-9._-]{3,40}$/).withMessage('De 3 a 40 caracteres: letras, números, punto, guion o guion bajo.'),
   body('correo').isString().trim().toLowerCase()
     .isEmail().withMessage('Ingresa un correo válido.').isLength({ max: 120 }),
+  // Solo se exigen si el rol es veterinario (lo valida el controlador).
+  r.texto('num_colegiado', { max: 20, opcional: true }),
+  r.texto('especialidad', { max: 100, opcional: true }),
 ];
 
 router.get('/', controlador.listar);

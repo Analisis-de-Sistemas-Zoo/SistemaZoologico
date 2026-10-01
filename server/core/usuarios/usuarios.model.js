@@ -6,7 +6,10 @@ const db = require('../../config/db');
 const CAMPOS = `
   u.id, u.nombres, u.apellidos, u.usuario, u.correo, u.activo, u.rol_id,
   r.codigo AS rol, r.nombre AS rol_nombre, u.ultimo_acceso, u.creado_en,
-  (u.bloqueado_hasta IS NOT NULL AND u.bloqueado_hasta > NOW()) AS bloqueado`;
+  (u.bloqueado_hasta IS NOT NULL AND u.bloqueado_hasta > NOW()) AS bloqueado,
+  v.num_colegiado, v.especialidad`;
+
+const FROM = 'FROM usuario u JOIN rol r ON r.id = u.rol_id LEFT JOIN veterinario v ON v.usuario_id = u.id';
 
 async function listar({ buscar, rolId, activo } = {}) {
   const condiciones = [];
@@ -28,17 +31,17 @@ async function listar({ buscar, rolId, activo } = {}) {
 
   const where = condiciones.length ? `WHERE ${condiciones.join(' AND ')}` : '';
   return db.query(
-    `SELECT ${CAMPOS} FROM usuario u JOIN rol r ON r.id = u.rol_id ${where} ORDER BY u.activo DESC, u.nombres`,
+    `SELECT ${CAMPOS} ${FROM} ${where} ORDER BY u.activo DESC, u.nombres`,
     parametros
   );
 }
 
 function obtener(id) {
-  return db.queryUno(`SELECT ${CAMPOS} FROM usuario u JOIN rol r ON r.id = u.rol_id WHERE u.id = ?`, [id]);
+  return db.queryUno(`SELECT ${CAMPOS} ${FROM} WHERE u.id = ?`, [id]);
 }
 
-async function crear({ rol_id, nombres, apellidos, usuario, correo, password_hash }) {
-  const resultado = await db.query(
+async function crear({ rol_id, nombres, apellidos, usuario, correo, password_hash }, conn = db) {
+  const resultado = await conn.query(
     `INSERT INTO usuario (rol_id, nombres, apellidos, usuario, correo, password_hash)
      VALUES (?, ?, ?, ?, ?, ?)`,
     [rol_id, nombres, apellidos, usuario, correo, password_hash]
@@ -46,8 +49,8 @@ async function crear({ rol_id, nombres, apellidos, usuario, correo, password_has
   return resultado.insertId;
 }
 
-function actualizar(id, { rol_id, nombres, apellidos, usuario, correo }) {
-  return db.query(
+function actualizar(id, { rol_id, nombres, apellidos, usuario, correo }, conn = db) {
+  return conn.query(
     'UPDATE usuario SET rol_id = ?, nombres = ?, apellidos = ?, usuario = ?, correo = ? WHERE id = ?',
     [rol_id, nombres, apellidos, usuario, correo, id]
   );
@@ -72,7 +75,20 @@ function listarRoles() {
 }
 
 function existeRol(id) {
-  return db.queryUno('SELECT id FROM rol WHERE id = ?', [id]);
+  return db.queryUno('SELECT id, codigo FROM rol WHERE id = ?', [id]);
+}
+
+/** Crea o actualiza los datos profesionales de un veterinario. */
+function guardarVeterinario(usuarioId, { num_colegiado, especialidad }, conn = db) {
+  return conn.query(
+    `INSERT INTO veterinario (usuario_id, num_colegiado, especialidad) VALUES (?, ?, ?)
+     ON DUPLICATE KEY UPDATE num_colegiado = VALUES(num_colegiado), especialidad = VALUES(especialidad)`,
+    [usuarioId, num_colegiado, especialidad]
+  );
+}
+
+function colegiadoEnUso(numColegiado, excluirUsuarioId = 0) {
+  return db.queryUno('SELECT usuario_id FROM veterinario WHERE num_colegiado = ? AND usuario_id <> ?', [numColegiado, excluirUsuarioId]);
 }
 
 /** Usuarios activos de uno o varios roles (para selects en los módulos). */
@@ -95,5 +111,7 @@ module.exports = {
   cambiarPassword,
   listarRoles,
   existeRol,
+  guardarVeterinario,
+  colegiadoEnUso,
   listarPorRoles,
 };
