@@ -11,7 +11,7 @@ Aplicación web con un **portal público** para visitantes (promociones y compra
 | Gestión de Limpieza | Alan | Pendiente |
 | Control Clínico | Daniela | Pendiente |
 | Gestión de Entradas y Promociones | Mario | Pendiente |
-| Base de datos (modelo entidad-relación) | Emilio | En revisión |
+| Base de datos (30 tablas, todos los módulos) | Mijeli | Lista |
 
 ---
 
@@ -78,6 +78,8 @@ Todos usan la contraseña **`Zoo2026!`**
 | `limpieza` | Personal de limpieza |
 | `taquilla` | Taquillero |
 
+Usuarios adicionales para tener datos variados: `veterinario2`, `cuidador2` y `limpieza2`.
+
 ## Comandos
 
 | Comando | Para qué sirve |
@@ -141,11 +143,34 @@ zoologico-mirada-salvaje/
 │           ├── paginas/         JS de las páginas del núcleo
 │           └── publico/         JS del portal y del login
 ├── database/                    Scripts SQL (se ejecutan en orden alfabético)
-│   ├── 01_core.sql              Tablas del núcleo
-│   └── 02_core_seed.sql         Roles y usuarios de prueba
+│   ├── 01_core.sql              Seguridad y catálogos compartidos (hábitats, áreas, especies, animales)
+│   ├── 02_core_seed.sql         Roles, usuarios de prueba y datos de los catálogos
+│   ├── 10_limpieza.sql          Tablas y datos de prueba de Limpieza
+│   ├── 20_alimentacion.sql      Tablas y datos de prueba de Alimentación
+│   ├── 30_clinico.sql           Tablas y datos de prueba de Control Clínico
+│   └── 40_entradas.sql          Tablas y datos de prueba de Entradas y Promociones
+├── docs/
+│   └── modelo-er.dbml           Modelo entidad-relación para dbdiagram.io
 ├── docker-compose.yml           MySQL 8 + Adminer
 └── .env.example                 Plantilla de configuración
 ```
+
+## Base de datos
+
+30 tablas y una vista, organizadas en un archivo por módulo.
+
+| Archivo | Tablas |
+|---|---|
+| `01_core.sql` | rol, usuario, sesion, bitacora, veterinario, habitat, area, especie, animal |
+| `10_limpieza.sql` | insumo_limpieza, tarea_limpieza, tarea_insumo, movimiento_insumo_limpieza |
+| `20_alimentacion.sql` | proveedor, alimento, lote_alimento, dieta, horario_alimentacion, registro_alimentacion, movimiento_alimento, vista_existencia_alimento |
+| `30_clinico.sql` | insumo_clinico, consulta_clinica, aplicacion_clinica, movimiento_clinico |
+| `40_entradas.sql` | tipo_entrada, promocion, cliente, compra, detalle_compra, entrada |
+
+- La integridad se protege en la propia base de datos con llaves foráneas, valores únicos y restricciones `CHECK` (por ejemplo, ninguna existencia puede quedar negativa y una dieta es de una especie **o** de un animal, nunca de ambos).
+- Los datos de prueba usan fechas relativas al día en que se crea la BD, así siempre hay raciones pendientes, lotes por vencer, stock bajo, vacunas próximas y ventas recientes.
+- Cada tabla y sus campos importantes tienen comentarios, que sirven de base para el diccionario de datos.
+- **Diagrama:** abre <https://dbdiagram.io/d>, borra el ejemplo y pega el contenido de `docs/modelo-er.dbml`.
 
 ## Seguridad implementada
 
