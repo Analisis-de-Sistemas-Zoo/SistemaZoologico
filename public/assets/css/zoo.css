@@ -410,6 +410,13 @@ body.cargando::after {
   flex: 1 1 10rem;
 }
 
+/* En el teléfono los filtros van de dos en dos y la búsqueda ocupa toda la fila. */
+@media (max-width: 575.98px) {
+  .filtros { gap: 0.6rem; padding: 0.85rem 1rem; }
+  .filtros > div { flex: 1 1 calc(50% - 0.3rem); min-width: 0; }
+  .filtros > div:first-child { flex-basis: 100%; }
+}
+
 .filtros .form-label {
   font-size: 0.8rem;
   color: var(--zoo-tinta-suave);
