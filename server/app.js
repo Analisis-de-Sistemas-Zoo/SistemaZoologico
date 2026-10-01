@@ -103,6 +103,7 @@ const librerias = {
   '/vendor/jspdf': 'jspdf/dist',
   '/vendor/jspdf-autotable': 'jspdf-autotable/dist',
   '/vendor/exceljs': 'exceljs/dist',
+  '/vendor/qrcode': 'qrcode-generator',
   '/vendor/fuentes/bricolage': '@fontsource-variable/bricolage-grotesque',
   '/vendor/fuentes/public-sans': '@fontsource-variable/public-sans',
 };
