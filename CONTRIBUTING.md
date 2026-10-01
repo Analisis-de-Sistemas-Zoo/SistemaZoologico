@@ -114,7 +114,7 @@ database/<NN>_<tu-modulo>.sql        Tablas y datos de prueba de tu módulo (ya 
 | Control Clínico | `clinico` | `database/30_clinico.sql` |
 | Entradas y Promociones | `entradas` | `database/40_entradas.sql` |
 
-**No modifiques** `server/app.js`, `server/core/`, `server/middlewares/`, `public/assets/js/core/` ni `public/assets/css/zoo.css`. Si necesitas algo del núcleo, avísale a Mijeli para hacerlo en una rama aparte y que todos lo reciban.
+**No modifiques** `server/app.js`, `server/core/`, `server/middlewares/`, `public/assets/js/core/` ni `public/assets/css/zoo.css`. Si necesitas algo del núcleo, avísale a Mijeli para agregarlo en `develop` y que todos lo reciban.
 
 ## 4. Cómo funciona un módulo
 
@@ -159,9 +159,9 @@ Como ejemplo completo puedes ver `server/core/usuarios/`.
 6. **Sin `<script>` ni `onclick` dentro del HTML**. La política de seguridad los bloquea; todo el JavaScript va en archivos `.js` y los eventos con `addEventListener`.
 7. **Responde con el formato estándar** usando `ok(res, datos)` o `creado(res, datos)`, y los errores con `throw new AppError(...)`.
 
-## 7. Herramientas del frontend
+## 7. Herramientas compartidas
 
-Cargadas en todas las páginas internas, en el objeto global `Zoo`:
+### Frontend (objeto global `Zoo`)
 
 | Herramienta | Uso |
 |---|---|
@@ -169,9 +169,30 @@ Cargadas en todas las páginas internas, en el objeto global `Zoo`:
 | `Zoo.sesion.puede('permiso')` | Muestra u oculta botones según el rol |
 | `Zoo.api.get/post/put/patch/del` | Llamadas al servidor |
 | `Zoo.ui.*` | Notificaciones, confirmaciones, formularios, tablas y formatos |
+| `Zoo.etiquetas.*` | Texto y color de los valores de la BD (`en_tratamiento` → "En tratamiento"). Agrega los de tu módulo con `Zoo.etiquetas.agregar(...)` |
+| `Zoo.crud({...})` | Pantalla estándar de registro: filtros, tabla, formulario en ventana y activar o desactivar |
 | `Zoo.reportes.pdf/excel` | Exportar reportes |
 
-Como ejemplos puedes ver `public/assets/js/paginas/admin/usuarios.js` (pantalla de registro) y `bitacora.js` (pantalla de reporte).
+Ejemplos: `paginas/catalogos/habitats.js` (registro simple con `Zoo.crud`), `paginas/catalogos/animales.js` (registro con ficha y exportación) y `paginas/admin/bitacora.js` (reporte paginado).
+
+### Datos para los selectores (`/api/comun`)
+
+Solo requieren sesión y devuelven registros activos. Úsalos en lugar de crear tus propias consultas:
+
+| Ruta | Devuelve |
+|---|---|
+| `GET /api/comun/animales?area_id=&especie_id=` | Animales en el zoológico |
+| `GET /api/comun/especies` | Especies |
+| `GET /api/comun/habitats` | Hábitats |
+| `GET /api/comun/areas?tipo=jaula` | Áreas; acepta varios tipos: `tipo=sanitario,jardin` |
+| `GET /api/comun/usuarios?roles=cuidador` | Personal activo de uno o varios roles |
+| `GET /api/comun/veterinarios` | Veterinarios con su número de colegiado |
+
+### Backend
+
+- `server/utils/reglas.js`: reglas de validación con mensajes uniformes (`r.texto`, `r.id`, `r.decimal`, `r.fecha`, `r.hora`, `r.enumerado`, etc.). Los campos opcionales vacíos llegan como `null`.
+- `server/core/bitacora/bitacora.service.js`: `bitacora.registrar(req, {...})`.
+- `server/config/db.js`: `db.query`, `db.queryUno` y `db.transaccion`.
 
 ## 8. Base de datos
 

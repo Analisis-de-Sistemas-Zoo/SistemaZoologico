@@ -124,22 +124,25 @@ zoologico-mirada-salvaje/
 │   │   ├── auth/                Login, logout, cambio de contraseña, bloqueo
 │   │   ├── usuarios/            Administración de usuarios (modelo, controlador, rutas)
 │   │   ├── bitacora/            Servicio y consulta de la bitácora
+│   │   ├── catalogos/           Hábitats, áreas, especies y animales
+│   │   ├── comun/               Consultas de solo lectura para los selectores de los módulos
 │   │   └── dashboard/           Resumen del inicio
 │   ├── modulos/                 Un módulo por carpeta (se cargan solos)
 │   │   └── index.js             Cargador automático y contrato de cada módulo
-│   └── utils/                   AppError, respuesta, generar-hash
+│   └── utils/                   AppError, respuesta, reglas de validación, generar-hash
 ├── public/                      Frontend
 │   ├── index.html               Portal público (sin sesión)
 │   ├── login.html               Acceso del personal
 │   ├── 403.html  404.html
 │   ├── app/                     Páginas protegidas (el servidor exige sesión y permiso)
 │   │   ├── dashboard.html  perfil.html
-│   │   └── admin/               usuarios.html  bitacora.html
+│   │   ├── admin/               usuarios.html  bitacora.html
+│   │   └── catalogos/           animales.html  especies.html  habitats.html  areas.html
 │   └── assets/
 │       ├── css/                 zoo.css (identidad y app interna), publico.css
 │       ├── img/                 logo e ilustraciones
 │       └── js/
-│           ├── core/            api.js, ui.js, layout.js, reportes.js
+│           ├── core/            api, ui, layout, etiquetas, crud y reportes
 │           ├── paginas/         JS de las páginas del núcleo
 │           └── publico/         JS del portal y del login
 ├── database/                    Scripts SQL (se ejecutan en orden alfabético)
