@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vacunas y tratamientos | Mirada Salvaje</title>
+  <link rel="icon" href="/assets/img/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/vendor/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/vendor/bootstrap-icons/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="/assets/css/zoo.css">
+</head>
+<body class="cargando">
+
+  <main class="app-main" data-titulo="Vacunas y tratamientos">
+    <div class="pagina-encabezado">
+      <div>
+        <h2>Vacunas y tratamientos</h2>
+        <p>Dosis vencidas o próximas a aplicar, y el historial de todo lo aplicado a los animales.</p>
+      </div>
+      <button class="btn btn-primary" type="button" id="btnNueva"><i class="bi bi-eyedropper me-2"></i>Registrar aplicación</button>
+    </div>
+
+    <section class="panel mb-4">
+      <div class="panel-encabezado">
+        <h3>Dosis pendientes</h3>
+        <select class="form-select form-select-sm w-auto" id="diasPendientes" aria-label="Horizonte">
+          <option value="7">Próximos 7 días</option>
+          <option value="15" selected>Próximos 15 días</option>
+          <option value="30">Próximos 30 días</option>
+        </select>
+      </div>
+      <div class="table-responsive">
+        <table class="table tabla-zoo">
+          <thead>
+            <tr><th>Estado</th><th>Fecha</th><th>Animal</th><th>Producto</th><th>Última aplicación</th><th class="text-end">Acción</th></tr>
+          </thead>
+          <tbody id="tablaPendientes"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-encabezado"><h3>Historial de aplicaciones</h3></div>
+      <form class="filtros" id="formFiltros">
+        <div>
+          <label class="form-label" for="fDesde">Desde</label>
+          <input class="form-control" type="date" id="fDesde" name="desde">
+        </div>
+        <div>
+          <label class="form-label" for="fHasta">Hasta</label>
+          <input class="form-control" type="date" id="fHasta" name="hasta">
+        </div>
+        <div>
+          <label class="form-label" for="fAnimal">Animal</label>
+          <select class="form-select" id="fAnimal" name="animal_id"></select>
+        </div>
+        <div>
+          <label class="form-label" for="fTipo">Tipo</label>
+          <select class="form-select" id="fTipo" name="tipo_insumo"></select>
+        </div>
+      </form>
+      <div id="historial"></div>
+    </section>
+  </main>
+
+  <div class="modal fade" id="modalAplicacion" tabindex="-1" aria-labelledby="tituloAplicacion" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <form class="modal-content" id="formAplicacion" novalidate>
+        <div class="modal-header">
+          <h5 class="modal-title" id="tituloAplicacion">Registrar aplicación</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <div class="alert alert-danger d-none" data-error-general role="alert"></div>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label" for="aAnimal">Animal</label>
+              <select class="form-select" id="aAnimal" name="animal_id" required></select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label" for="aFecha">Fecha y hora</label>
+              <input class="form-control" type="datetime-local" id="aFecha" name="fecha_aplicacion" required>
+            </div>
+            <div class="col-12">
+              <label class="form-label" for="aInsumo">Medicamento, vacuna o vitamina</label>
+              <select class="form-select" id="aInsumo" name="insumo_clinico_id" required></select>
+              <div class="form-text" id="aInsumoAyuda"></div>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label" for="aDosis">Dosis</label>
+              <div class="input-group">
+                <input class="form-control" type="number" id="aDosis" name="dosis" min="0.01" step="0.01" required>
+                <span class="input-group-text" id="aUnidad">—</span>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label" for="aVia">Vía</label>
+              <select class="form-select" id="aVia" name="via" required></select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label" for="aProxima">Próxima dosis</label>
+              <input class="form-control" type="date" id="aProxima" name="proxima_dosis">
+            </div>
+            <div class="col-12">
+              <label class="form-label" for="aObservaciones">Observaciones</label>
+              <input class="form-control" id="aObservaciones" name="observaciones" maxlength="255">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Registrar aplicación</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js" defer></script>
+  <script src="/assets/js/core/api.js" defer></script>
+  <script src="/assets/js/core/ui.js" defer></script>
+  <script src="/assets/js/core/etiquetas.js" defer></script>
+  <script src="/assets/js/core/layout.js" defer></script>
+  <script src="/assets/js/modulos/clinico/etiquetas.js" defer></script>
+  <script src="/assets/js/modulos/clinico/comun.js" defer></script>
+  <script src="/assets/js/modulos/clinico/aplicaciones.js" defer></script>
+</body>
+</html>
