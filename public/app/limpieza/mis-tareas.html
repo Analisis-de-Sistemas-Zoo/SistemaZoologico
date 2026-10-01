@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mis tareas | Mirada Salvaje</title>
+  <link rel="icon" href="/assets/img/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/vendor/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/vendor/bootstrap-icons/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="/assets/css/zoo.css">
+</head>
+<body class="cargando">
+
+  <main class="app-main" data-titulo="Mis tareas">
+    <div class="selector-dia">
+      <button class="btn btn-light" type="button" id="btnAnterior" aria-label="Día anterior"><i class="bi bi-chevron-left"></i></button>
+      <div class="fecha" id="textoFecha" aria-live="polite"></div>
+      <button class="btn btn-light" type="button" id="btnSiguiente" aria-label="Día siguiente"><i class="bi bi-chevron-right"></i></button>
+      <input class="form-control w-auto" type="date" id="fecha" aria-label="Elegir fecha">
+    </div>
+
+    <p class="text-secondary mb-3" id="resumenDia"></p>
+
+    <div class="lista-tareas" id="listaTareas"></div>
+  </main>
+
+  <!-- Completar -->
+  <div class="modal fade" id="modalCompletar" tabindex="-1" aria-labelledby="tituloCompletar" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen-sm-down">
+      <form class="modal-content" id="formCompletar" novalidate>
+        <div class="modal-header">
+          <h5 class="modal-title" id="tituloCompletar">Completar tarea</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <div class="alert alert-danger d-none" data-error-general role="alert"></div>
+          <p class="text-secondary" id="lugarCompletar"></p>
+
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="form-label mb-0">Insumos que usaste</span>
+            <button class="btn btn-sm btn-outline-primary" type="button" id="btnAgregarInsumo"><i class="bi bi-plus-lg me-1"></i>Agregar</button>
+          </div>
+          <div id="filasInsumos" class="d-grid gap-2 mb-3"></div>
+
+          <label class="form-label" for="cObservaciones">Observaciones <span class="text-secondary fw-normal">(opcional)</span></label>
+          <textarea class="form-control" id="cObservaciones" name="observaciones" rows="3" maxlength="500" placeholder="Ej. Se encontró una fuga en el lavamanos"></textarea>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Volver</button>
+          <button type="submit" class="btn btn-primary">Marcar como completada</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js" defer></script>
+  <script src="/assets/js/core/api.js" defer></script>
+  <script src="/assets/js/core/ui.js" defer></script>
+  <script src="/assets/js/core/etiquetas.js" defer></script>
+  <script src="/assets/js/core/layout.js" defer></script>
+  <script src="/assets/js/modulos/limpieza/etiquetas.js" defer></script>
+  <script src="/assets/js/modulos/limpieza/comun.js" defer></script>
+  <script src="/assets/js/modulos/limpieza/mis-tareas.js" defer></script>
+</body>
+</html>
