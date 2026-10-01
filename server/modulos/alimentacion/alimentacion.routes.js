@@ -8,14 +8,27 @@ const { body } = require('express-validator');
 const validar = require('../../middlewares/validar');
 const { requierePermiso } = require('../../middlewares/auth');
 const r = require('../../utils/reglas');
-const { CATEGORIAS_ALIMENTO, UNIDADES_ALIMENTO, ESTADOS_LOTE, ALERTAS_ALIMENTO } = require('./constantes');
+const { CATEGORIAS_ALIMENTO, UNIDADES_ALIMENTO, ESTADOS_LOTE, ALERTAS_ALIMENTO, ESTADOS_DIETA, DIAS } = require('./constantes');
 const alimentos = require('./alimentos.controller');
 const lotes = require('./lotes.controller');
 const proveedores = require('./proveedores.controller');
+const dietas = require('./dietas.controller');
+const horarios = require('./horarios.controller');
+const db = require('../../config/db');
+const { ok } = require('../../utils/respuesta');
 
 const router = Router();
 const verInventario = requierePermiso('alimentacion.inventario.ver');
 const gestionarInventario = requierePermiso('alimentacion.inventario.gestionar');
+const verDietas = requierePermiso('alimentacion.dietas.ver');
+const gestionarDietas = requierePermiso('alimentacion.dietas.gestionar');
+const verHorarios = requierePermiso('alimentacion.horarios.ver');
+const gestionarHorarios = requierePermiso('alimentacion.horarios.gestionar');
+
+/** GET /alimentos/opciones — lista corta para los selectores de cualquier pantalla del módulo. */
+router.get('/alimentos/opciones', async (_req, res) => {
+  ok(res, await db.query('SELECT id, nombre, categoria, unidad_medida, activo FROM alimento ORDER BY nombre'));
+});
 
 // ================================================================ Alimentos
 const reglasAlimento = [
@@ -82,5 +95,50 @@ router.get('/proveedores/:id', verInventario, validar([r.idParam()]), proveedore
 router.post('/proveedores', gestionarInventario, validar(reglasProveedor), proveedores.crear);
 router.put('/proveedores/:id', gestionarInventario, validar([r.idParam(), ...reglasProveedor]), proveedores.actualizar);
 router.patch('/proveedores/:id/estado', gestionarInventario, validar([r.idParam(), r.booleano('activo')]), proveedores.cambiarEstado);
+
+// =================================================================== Dietas
+const reglasDieta = [
+  r.enumerado('destino', ['especie', 'animal'], { mensaje: 'Indica si la dieta es para una especie o para un animal.' }),
+  body('especie_id').if(body('destino').equals('especie')).isInt({ min: 1 }).withMessage('Selecciona la especie.').toInt(),
+  body('animal_id').if(body('destino').equals('animal')).isInt({ min: 1 }).withMessage('Selecciona el animal.').toInt(),
+  r.id('alimento_id', { mensaje: 'Selecciona el alimento.' }),
+  r.decimal('cantidad_racion', { min: 0.001, max: 99999 }),
+  r.entero('frecuencia_diaria', { min: 1, max: 12 }),
+  r.texto('indicaciones', { max: 255, opcional: true }),
+  r.texto('motivo', { max: 255, opcional: true }),
+  r.fecha('fecha_inicio'),
+  r.fecha('fecha_fin', { opcional: true }),
+];
+
+router.get('/dietas', verDietas, validar([
+  r.filtroEnum('destino', ['especie', 'animal']), r.filtroId('especie_id'), r.filtroId('animal_id'), r.filtroId('alimento_id'),
+  r.filtroEnum('estado', ESTADOS_DIETA), r.filtroTexto('buscar'),
+]), dietas.listar);
+router.get('/dietas/por-animal', verDietas, validar([
+  r.filtroFecha('fecha'), r.filtroId('area_id'), r.filtroId('especie_id'), r.filtroId('animal_id'), r.filtroTexto('buscar'),
+]), dietas.porAnimal);
+router.get('/dietas/:id', verDietas, validar([r.idParam()]), dietas.obtener);
+router.post('/dietas', gestionarDietas, validar(reglasDieta), dietas.crear);
+router.put('/dietas/:id', gestionarDietas, validar([r.idParam(), ...reglasDieta]), dietas.actualizar);
+router.patch('/dietas/:id/finalizar', gestionarDietas, validar([r.idParam(), r.texto('motivo', { max: 255, opcional: true })]), dietas.finalizar);
+
+// ================================================================= Horarios
+const reglasHorario = [
+  r.id('area_id', { mensaje: 'Selecciona la jaula.' }),
+  r.hora('hora'),
+  body('dias').isArray({ min: 1, max: 7 }).withMessage('Elige al menos un día.'),
+  body('dias.*').isIn(DIAS).withMessage('Día inválido.'),
+  r.id('cuidador_id', { mensaje: 'Selecciona el cuidador responsable.' }),
+  r.texto('observaciones', { max: 255, opcional: true }),
+];
+
+router.get('/horarios', verHorarios, validar([
+  r.filtroId('area_id'), r.filtroId('cuidador_id'), r.filtroEnum('dia', DIAS), r.filtroActivo(),
+]), horarios.listar);
+router.get('/horarios/cobertura', verHorarios, horarios.cobertura);
+router.get('/horarios/:id', verHorarios, validar([r.idParam()]), horarios.obtener);
+router.post('/horarios', gestionarHorarios, validar(reglasHorario), horarios.crear);
+router.put('/horarios/:id', gestionarHorarios, validar([r.idParam(), ...reglasHorario]), horarios.actualizar);
+router.patch('/horarios/:id/estado', gestionarHorarios, validar([r.idParam(), r.booleano('activo')]), horarios.cambiarEstado);
 
 module.exports = router;

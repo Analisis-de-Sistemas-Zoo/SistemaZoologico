@@ -10,12 +10,9 @@ const { ok, creado } = require('../../utils/respuesta');
 const { datosValidos } = require('../../middlewares/validar');
 const bitacora = require('../../core/bitacora/bitacora.service');
 
-const MODULO = 'alimentacion';
+const { hoy } = require('./constantes');
 
-const hoy = () => {
-  const d = new Date(Date.now() - 6 * 3600 * 1000); // Guatemala, UTC-6
-  return d.toISOString().slice(0, 10);
-};
+const MODULO = 'alimentacion';
 
 async function exigirLote(id) {
   const lote = await lotes.obtener(id);
