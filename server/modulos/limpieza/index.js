@@ -9,9 +9,13 @@
  */
 const { ROLES } = require('../../config/permisos');
 const router = require('./limpieza.routes');
-const { pendiente } = require('../../utils/pendiente');
+const { tareas } = require('./tareas.model');
+const insumos = require('./insumos.model');
 
 const { ADMIN, DIRECTOR, SUP_LIMPIEZA, LIMPIEZA } = ROLES;
+
+/** Fecha de hoy en Guatemala (UTC-6) como AAAA-MM-DD. */
+const hoy = () => new Date(Date.now() - 6 * 3600 * 1000).toISOString().slice(0, 10);
 
 module.exports = {
   clave: 'limpieza',
@@ -49,7 +53,33 @@ module.exports = {
    *   - insumos:   "Insumos bajo el mínimo"
    * Cada tarjeta: { titulo, valor, icono, color: 'primary'|'alerta'|'peligro'|'neutro', url }
    */
-  async resumenDashboard(_usuario, _puede) {
-    pendiente('Tarjetas de limpieza en el inicio');
+  async resumenDashboard(usuario, puede) {
+    const tarjetas = [];
+
+    if (puede('limpieza.tareas.ejecutar')) {
+      const pendientes = await tareas.conteo({ estados: ['pendiente', 'en_proceso'], asignado_id: usuario.id, fecha: hoy() });
+      tarjetas.push({
+        titulo: 'Mis tareas de hoy', valor: pendientes, icono: 'bi-check2-square',
+        color: pendientes ? 'alerta' : 'neutro', url: '/app/limpieza/mis-tareas.html',
+      });
+    }
+
+    if (puede('limpieza.tareas.verificar')) {
+      const porVerificar = await tareas.conteo({ estados: ['completada'] });
+      tarjetas.push({
+        titulo: 'Tareas por verificar', valor: porVerificar, icono: 'bi-clipboard-check',
+        color: porVerificar ? 'alerta' : 'neutro', url: '/app/limpieza/tareas.html',
+      });
+    }
+
+    if (puede('limpieza.insumos.ver')) {
+      const bajos = await insumos.contarBajoMinimo();
+      tarjetas.push({
+        titulo: 'Insumos bajo el mínimo', valor: bajos, icono: 'bi-droplet',
+        color: bajos ? 'peligro' : 'neutro', url: '/app/limpieza/insumos.html?bajo_minimo=1',
+      });
+    }
+
+    return tarjetas;
   },
 };
