@@ -37,6 +37,8 @@ Todas las librerías del navegador se sirven desde `node_modules`, así que **la
 
 ## Instalación (primera vez)
 
+> ¿Solo quieres levantarlo? Sigue **[DESPLEGAR.md](DESPLEGAR.md)**, que tiene los comandos y los puertos resumidos.
+
 ```bash
 # 1. Clonar el repositorio
 git clone <URL_DEL_REPOSITORIO>
