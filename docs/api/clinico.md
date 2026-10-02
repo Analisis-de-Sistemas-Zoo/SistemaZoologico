@@ -14,12 +14,12 @@ Responsable del backend: **Daniela**. La interfaz ya está construida y llama ex
 | Funcionalidad | Estado |
 |---|---|
 | Inventario: listar, crear, editar, activar/desactivar | ✅ Implementada (ejemplo) |
-| Inventario: movimientos e historial | ⏳ Pendiente |
-| Expedientes | ⏳ Pendiente |
-| Consultas | ⏳ Pendiente |
-| Aplicaciones y dosis pendientes | ⏳ Pendiente |
-| Reportes | ⏳ Pendiente |
-| Tarjetas del inicio (`index.js → resumenDashboard`) | ⏳ Pendiente |
+| Inventario: movimientos e historial | ✅ Implementada |
+| Expedientes | ✅ Implementada |
+| Consultas | ✅ Implementada |
+| Aplicaciones y dosis pendientes | ✅ Implementada |
+| Reportes | ✅ Implementada |
+| Tarjetas del inicio (`index.js → resumenDashboard`) | ✅ Implementada |
 
 ## Permisos
 
@@ -31,6 +31,18 @@ Responsable del backend: **Daniela**. La interfaz ya está construida y llama ex
 | `clinico.reportes.ver` | Administrador, director, veterinario |
 
 El veterinario de una consulta o aplicación es siempre el usuario en sesión (`req.session.usuario.id`), que existe en la tabla `veterinario`.
+
+### Decisiones de implementación
+
+- **Una sola función de aplicación.** La función interna `aplicarProducto()` (`clinico.controller.js`) es la que inserta la aplicación, deja el movimiento de salida y descuenta la existencia. La usan `POST /aplicaciones` y las aplicaciones que llegan dentro de `POST /consultas`, para que ambas rutas se comporten igual.
+- **Existencia que nunca queda negativa.** El descuento es un `UPDATE ... SET stock_actual = stock_actual - ? WHERE id = ? AND stock_actual >= ?` dentro de la transacción; si `affectedRows` es 0 se responde 409. Lo mismo para la merma del inventario.
+- **Refuerzo automático de vacunas.** Si el producto es `vacuna`, tiene `intervalo_refuerzo_dias` y no viene `proxima_dosis`, se calcula sola sumando ese intervalo a la fecha de aplicación.
+- **`proxima_dosis` no puede ser anterior a la aplicación** (es un `CHECK` de la BD): se responde 422 en el campo, no un error interno.
+- **Sin fechas futuras.** Ni `POST /consultas` (`fecha`) ni `POST /aplicaciones` (`fecha_aplicacion`) aceptan una fecha posterior a ahora; la interfaz ya lo limita, el backend lo confirma.
+- **Las aplicaciones de una consulta usan la fecha de la consulta**, porque el formulario no pide una fecha por fila. Un error en una de ellas se señala con la ruta de la fila: `aplicaciones[0].dosis`, `aplicaciones[1].insumo_clinico_id`, etc.
+- **`req.query` llega como texto** (en Express 5 es un getter, así que los saneadores no se reflejan ahí): `?dias=` se convierte con `Number()`, que además respeta `dias=0` (solo vencidas).
+- **Los reportes usan `movimiento_clinico` como fuente del consumo** (entradas, salidas y mermas), para que las tres sumas cuadren con `stock_actual`. Sin fechas, el periodo por defecto es el mes en curso; un periodo invertido responde 422.
+- **En una merma no se guarda lote ni vencimiento**: son datos del producto recibido y la interfaz los deshabilita.
 
 ---
 
@@ -153,7 +165,7 @@ Filtros: `buscar`, `tipo`, `activo`, `bajo_minimo=1`. Incluye `bajo_minimo` (0/1
 ### `POST /inventario` ✅ · `PUT /inventario/:id` ✅ · `PATCH /inventario/:id/estado` ✅
 Permiso `clinico.inventario.gestionar`. La existencia inicial solo se recibe al crear. Los campos de vacuna se guardan solo si `tipo = 'vacuna'`.
 
-### `GET /inventario/:id/movimientos` ⏳
+### `GET /inventario/:id/movimientos` ✅
 Del más reciente al más antiguo:
 ```json
 [ { "id": 3, "tipo": "salida", "cantidad": 7.0, "aplicacion_id": 1, "animal": "Simba",
@@ -162,7 +174,7 @@ Del más reciente al más antiguo:
 ```
 `animal` = animal de la aplicación (solo en salidas).
 
-### `POST /inventario/:id/movimientos` ⏳
+### `POST /inventario/:id/movimientos` ✅
 Permiso `clinico.inventario.gestionar`.
 `{ "tipo": "entrada" | "merma", "cantidad": 50, "numero_lote": "AMX-3001", "fecha_vencimiento": "2027-06-30", "motivo": "Factura 889" }`
 En una transacción: inserta el movimiento y suma o resta `stock_actual`. Merma que deja existencia negativa: 409.
