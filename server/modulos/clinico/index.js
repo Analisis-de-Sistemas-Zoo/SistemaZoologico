@@ -7,9 +7,13 @@
  */
 const { ROLES } = require('../../config/permisos');
 const router = require('./clinico.routes');
-const { pendiente } = require('../../utils/pendiente');
+const { clinico } = require('./clinico.model');
+const inventario = require('./inventario.model');
 
 const { ADMIN, DIRECTOR, VETERINARIO } = ROLES;
+
+/** Días que se anticipa la tarjeta de dosis por venir. */
+const DIAS_PRORO = 7;
 
 module.exports = {
   clave: 'clinico',
@@ -43,13 +47,33 @@ module.exports = {
   router,
 
   /**
-   * Tarjetas del inicio sugeridas:
-   *   - "Dosis vencidas" (aplicaciones con proxima_dosis < hoy sin aplicación posterior), color peligro
-   *   - "Dosis en los próximos 7 días", color alerta
-   *   - "Insumos clínicos bajo el mínimo", color peligro
+   * Tarjetas del inicio:
+   *   - "Dosis vencidas" (aplicaciones con proxima_dosis < hoy sin aplicación posterior)
+   *   - "Dosis en los próximos 7 días"
+   *   - "Productos clínicos bajo el mínimo"
+   * Los tres roles que entran al módulo (administrador, director y veterinario)
+   * ven las mismas, así que aquí no hay que volver a pedir permisos.
    * Formato: { titulo, valor, icono, color: 'primary'|'alerta'|'peligro'|'neutro', url }
    */
-  async resumenDashboard(_usuario, _puede) {
-    pendiente('Tarjetas de control clínico en el inicio');
+  async resumenDashboard() {
+    const [vencidas, proximas, bajos] = await Promise.all([
+      clinico.conteoDosisVencidas(),
+      clinico.conteoDosisProximas(DIAS_PRORO),
+      inventario.contarBajoMinimo(),
+    ]);
+    return [
+      {
+        titulo: 'Dosis vencidas', valor: vencidas, icono: 'bi-exclamation-triangle',
+        color: vencidas ? 'peligro' : 'neutro', url: '/app/clinico/aplicaciones.html',
+      },
+      {
+        titulo: `Dosis en los próximos ${DIAS_PRORO} días`, valor: proximas, icono: 'bi-calendar-week',
+        color: proximas ? 'alerta' : 'neutro', url: '/app/clinico/aplicaciones.html',
+      },
+      {
+        titulo: 'Productos clínicos bajo el mínimo', valor: bajos, icono: 'bi-capsule',
+        color: bajos ? 'peligro' : 'neutro', url: '/app/clinico/inventario.html?bajo_minimo=1',
+      },
+    ];
   },
 };
