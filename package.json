@@ -11,7 +11,8 @@
     "db:down": "docker compose down",
     "db:reset": "docker compose down -v && docker compose up -d",
     "db:logs": "docker compose logs -f mysql",
-    "hash": "node server/utils/generar-hash.js"
+    "hash": "node server/utils/generar-hash.js",
+    "test": "node pruebas/index.js"
   },
   "engines": {
     "node": ">=20"
