@@ -12,14 +12,14 @@ Responsable del backend: **Alan**. La interfaz ya está construida y llama exact
 
 | Funcionalidad | Estado |
 |---|---|
-| Insumos: listar, crear, editar, activar/desactivar | ✅ Implementada (ejemplo) |
-| Insumos: movimientos e historial | ⏳ Pendiente |
-| Tareas (supervisor) | ⏳ Pendiente |
-| Mis tareas (personal) | ⏳ Pendiente |
-| Reportes | ⏳ Pendiente |
-| Tarjetas del inicio (`index.js → resumenDashboard`) | ⏳ Pendiente |
+| Insumos: listar, crear, editar, activar/desactivar | ✅ Implementada |
+| Insumos: movimientos e historial | ✅ Implementada |
+| Tareas (supervisor) | ✅ Implementada |
+| Mis tareas (personal) | ✅ Implementada |
+| Reportes | ✅ Implementada |
+| Tarjetas del inicio (`index.js → resumenDashboard`) | ✅ Implementada |
 
-Para implementar una función, abre su controlador, borra la línea `pendiente(...)` y programa la lógica.
+Las 17 funciones quedaron programadas. Cada cambio registra su bitácora con `modulo: 'limpieza'`.
 
 ## Permisos
 
@@ -153,7 +153,7 @@ Todos los roles del módulo (el personal lo usa al completar tareas). Filtros: `
 ### `POST /insumos` ✅ · `PUT /insumos/:id` ✅ · `PATCH /insumos/:id/estado` ✅
 Permiso `limpieza.insumos.gestionar`. La existencia inicial (`stock_actual`) solo se recibe al crear; después cambia únicamente con movimientos.
 
-### `GET /insumos/:id/movimientos` ⏳ — historial
+### `GET /insumos/:id/movimientos` ✅ — historial
 Permiso `limpieza.insumos.ver`. Del más reciente al más antiguo:
 ```json
 [ { "id": 8, "tipo": "salida", "cantidad": 2.0, "tarea_id": 3, "area": "Oficinas administrativas",
@@ -161,7 +161,7 @@ Permiso `limpieza.insumos.ver`. Del más reciente al más antiguo:
 ```
 `area` es el área de la tarea (solo en salidas); `usuario` es el nombre de quien registró el movimiento.
 
-### `POST /insumos/:id/movimientos` ⏳ — entrada o merma
+### `POST /insumos/:id/movimientos` ✅ — entrada o merma
 Permiso `limpieza.insumos.gestionar`. `{ "tipo": "entrada" | "merma", "cantidad": 10, "motivo": "Factura 1234" }`
 En una transacción: inserta el movimiento y suma (entrada) o resta (merma) del `stock_actual`. Si la merma deja la existencia negativa, 409.
 
