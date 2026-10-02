@@ -18,13 +18,13 @@ Responsable del backend: **Mario**. La interfaz ya está construida (portal de c
 | Tipos de entrada: listar, crear, editar, activar/desactivar | ✅ Implementada (ejemplo) |
 | Promociones: listar, crear, editar, activar/desactivar | ✅ Implementada (ejemplo) |
 | Portal: tipos y promociones públicas | ✅ Implementada |
-| Cotización (portal y taquilla) | ⏳ Pendiente |
-| Compra web y consulta de "Mis entradas" | ⏳ Pendiente |
-| Venta en taquilla | ⏳ Pendiente |
-| Lista y detalle de ventas, anulación | ⏳ Pendiente |
-| Validación de ingreso y resumen del día | ⏳ Pendiente |
-| Reportes | ⏳ Pendiente |
-| Tarjetas del inicio (`index.js → resumenDashboard`) | ⏳ Pendiente |
+| Cotización (portal y taquilla) | ✅ Implementada |
+| Compra web y consulta de "Mis entradas" | ✅ Implementada |
+| Venta en taquilla | ✅ Implementada |
+| Lista y detalle de ventas, anulación | ✅ Implementada |
+| Validación de ingreso y resumen del día | ✅ Implementada |
+| Reportes | ✅ Implementada |
+| Tarjetas del inicio (`index.js → resumenDashboard`) | ✅ Implementada |
 
 ## Permisos
 
@@ -48,7 +48,7 @@ Responsable del backend: **Mario**. La interfaz ya está construida (portal de c
 - Todos los tipos de entrada pedidos deben existir y estar activos (422 si no).
 
 ### Promociones (cómo se calcula el descuento)
-Programa **una sola función interna** `cotizar(fecha_visita, items, codigo, conn?)` y úsala en las tres rutas que cobran (cotizar, compra web y venta en taquilla). Así el total siempre se calcula igual.
+Programa **una sola función interna** `calcularCotizacion(fecha_visita, items, codigo, conn?)` y úsala en las tres rutas que cobran (cotizar, compra web y venta en taquilla). Así el total siempre se calcula igual. Como una compra se guarda, recibe `conn` para que la lectura de precios y promociones ocurra dentro de la misma transacción.
 
 1. Una promoción **aplica** si `activa = 1` y `fecha_visita` está entre `fecha_inicio` y `fecha_fin` (ambas incluidas). Se compara con la fecha de **visita**, no con la de compra.
 2. Si la promoción tiene `codigo` (cupón), solo aplica cuando el cliente envía ese mismo código en `codigo_promocion`.
