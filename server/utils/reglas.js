@@ -67,6 +67,8 @@ function fechaHora(campo, { opcional = false } = {}) {
     .customSanitizer((v) => {
       if (!v) return v;
       const [f, h] = String(v).replace('T', ' ').split(' ');
+      // Sin hora el valor llega incompleto: se devuelve igual y lo rechaza el `matches`.
+      if (!h) return v;
       return `${f} ${h.length === 5 ? `${h}:00` : h}`;
     });
 }
