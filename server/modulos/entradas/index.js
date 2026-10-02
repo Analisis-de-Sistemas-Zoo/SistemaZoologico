@@ -11,7 +11,7 @@
  */
 const { ROLES } = require('../../config/permisos');
 const { router, routerPublico } = require('./entradas.routes');
-const { pendiente } = require('../../utils/pendiente');
+const m = require('./ventas.model');
 
 const { ADMIN, DIRECTOR, TAQUILLERO } = ROLES;
 
@@ -52,7 +52,28 @@ module.exports = {
    *   - "Visitantes que ya ingresaron hoy"               (entradas usadas hoy)
    * Formato: { titulo, valor, icono, color: 'primary'|'alerta'|'peligro'|'neutro', url }
    */
-  async resumenDashboard(_usuario, _puede) {
-    pendiente('Tarjetas de entradas en el inicio');
+  async resumenDashboard(_usuario, puede) {
+    const tarjetas = [];
+    if (puede('entradas.ventas.ver')) {
+      const hoy = await m.resumenVentasHoy();
+      tarjetas.push(
+        { titulo: 'Entradas vendidas hoy', valor: Number(hoy.entradas), icono: 'bi-ticket-perforated',
+          color: 'primary', url: '/app/entradas/ventas.html' },
+        { titulo: 'Ingresos de hoy', valor: `Q${Number(hoy.ingresos).toFixed(2)}`, icono: 'bi-cash-stack',
+          color: 'primary', url: '/app/entradas/ventas.html' },
+      );
+    }
+    if (puede('entradas.validar')) {
+      const r = await m.resumenIngresosHoy();
+      const ingresados = Number(r.ingresados || 0);
+      const pendientes = Number(r.entradas_del_dia || 0) - ingresados;
+      tarjetas.push(
+        { titulo: 'Visitantes que ingresaron hoy', valor: ingresados, icono: 'bi-person-check',
+          color: ingresados ? 'primary' : 'neutro', url: '/app/entradas/validar.html' },
+        { titulo: 'Entradas de hoy por ingresar', valor: pendientes, icono: 'bi-hourglass-split',
+          color: pendientes ? 'alerta' : 'neutro', url: '/app/entradas/validar.html' },
+      );
+    }
+    return tarjetas;
   },
 };
