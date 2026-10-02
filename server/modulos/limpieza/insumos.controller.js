@@ -1,16 +1,19 @@
 /**
  * Controlador de insumos de limpieza.
- * EJEMPLO COMPLETO: listar, crear, editar y activar/desactivar ya funcionan.
- * Pendiente: movimientos (entradas y mermas) e historial.
+ * Listar, crear, editar y activar/desactivar ya funcionaban; aquí también el
+ * historial de movimientos y el registro de entradas y mermas.
  */
+const db = require('../../config/db');
 const insumos = require('./insumos.model');
 const AppError = require('../../utils/AppError');
 const { ok, creado } = require('../../utils/respuesta');
 const { datosValidos } = require('../../middlewares/validar');
-const { pendiente } = require('../../utils/pendiente');
 const bitacora = require('../../core/bitacora/bitacora.service');
 
 const MODULO = 'limpieza';
+
+/** El stock tiene dos decimales en la BD. */
+const redondear2 = (valor) => Math.round(Number(valor) * 100) / 100;
 
 async function exigirInsumo(id) {
   const insumo = await insumos.obtener(id);
@@ -70,23 +73,49 @@ async function cambiarEstado(req, res) {
 
 /**
  * GET /api/limpieza/insumos/:id/movimientos
- * TODO (Alan): devolver el historial del insumo, del más reciente al más antiguo.
+ * Historial del insumo, del más reciente al más antiguo.
  * Ver docs/api/limpieza.md → "Historial de movimientos".
  */
-async function movimientos(_req, _res) {
-  pendiente('Historial de movimientos del insumo');
+async function movimientos(req, res) {
+  const id = Number(req.params.id);
+  await exigirInsumo(id);
+  return ok(res, await insumos.movimientos(id));
 }
 
 /**
  * POST /api/limpieza/insumos/:id/movimientos   { tipo: 'entrada'|'merma', cantidad, motivo }
- * TODO (Alan): en una transacción (db.transaccion)
+ * En una transacción:
  *   1. Insertar en movimiento_insumo_limpieza con usuario_id = req.session.usuario.id
  *   2. Sumar (entrada) o restar (merma) en insumo_limpieza.stock_actual
  *   3. Si una merma deja el stock negativo, responder 409 (la BD también lo impide con un CHECK)
  *   4. Registrar en la bitácora
  */
-async function registrarMovimiento(_req, _res) {
-  pendiente('Registrar entrada o merma de insumos');
+async function registrarMovimiento(req, res) {
+  const id = Number(req.params.id);
+  const antes = await exigirInsumo(id);
+  const { tipo, cantidad, motivo } = datosValidos(req);
+  const valor = redondear2(cantidad);
+
+  await db.transaccion(async (conn) => {
+    await insumos.crearMovimiento({ insumo_id: id, tipo, cantidad: valor, motivo, usuario_id: req.session.usuario.id }, conn);
+    if (tipo === 'entrada') {
+      await insumos.sumarStock(id, valor, conn);
+    } else {
+      const resta = await insumos.restarStock(id, valor, conn);
+      if (!resta.affectedRows) {
+        throw AppError.conflicto(`La merma dejaría el stock en negativo (hay ${antes.stock_actual}).`);
+      }
+    }
+  });
+
+  await bitacora.registrar(req, {
+    modulo: MODULO,
+    accion: bitacora.ACCIONES.ACTUALIZAR,
+    tabla: 'insumo_limpieza',
+    registroId: id,
+    detalle: { movimiento: { tipo, cantidad: valor, motivo }, stock: { antes: Number(antes.stock_actual) } },
+  });
+  return creado(res, { id, tipo, cantidad: valor }, tipo === 'entrada' ? 'Entrada registrada.' : 'Merma registrada.');
 }
 
 module.exports = { listar, obtener, crear, actualizar, cambiarEstado, movimientos, registrarMovimiento };
