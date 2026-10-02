@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Raciones del día | Mirada Salvaje</title>
+  <link rel="icon" href="/assets/img/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/vendor/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/vendor/bootstrap-icons/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="/assets/css/zoo.css">
+</head>
+<body class="cargando">
+
+  <main class="app-main" data-titulo="Raciones del día">
+    <div class="pagina-encabezado">
+      <div>
+        <h2>Raciones del día</h2>
+        <p>Turnos de alimentación con lo que le toca a cada animal según su dieta. Al registrar una ración, el alimento se descuenta solo del lote que vence primero.</p>
+      </div>
+    </div>
+
+    <section class="panel mb-3">
+      <form class="filtros" id="formFiltros">
+        <div>
+          <label class="form-label" for="fFecha">Fecha</label>
+          <input class="form-control" type="date" id="fFecha" name="fecha">
+        </div>
+        <div>
+          <label class="form-label" for="fCuidador">Cuidador</label>
+          <select class="form-select" id="fCuidador" name="cuidador_id"></select>
+        </div>
+        <div>
+          <label class="form-label" for="fJaula">Jaula</label>
+          <select class="form-select" id="fJaula" name="area_id"></select>
+        </div>
+      </form>
+    </section>
+
+    <div class="resumen mb-3" id="resumen" aria-live="polite"></div>
+    <div id="turnos" aria-live="polite"></div>
+  </main>
+
+  <div class="modal fade" id="modalRacion" tabindex="-1" aria-labelledby="tituloRacion" aria-hidden="true">
+    <div class="modal-dialog">
+      <form class="modal-content" id="formRacion" novalidate>
+        <div class="modal-header">
+          <h5 class="modal-title" id="tituloRacion">Registrar ración</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <div class="alert alert-danger d-none" data-error-general role="alert"></div>
+          <div id="infoRacion" class="mb-3"></div>
+          <div class="mb-3">
+            <label class="form-label" for="rCantidad">Cantidad servida</label>
+            <div class="input-group">
+              <input class="form-control" id="rCantidad" name="cantidad_suministrada" type="number" min="0.001" step="0.001" required>
+              <span class="input-group-text" id="rUnidad">kg</span>
+            </div>
+            <div class="form-text" id="rSugerida"></div>
+          </div>
+          <fieldset class="mb-3">
+            <legend class="form-label">¿Cuánto comió?</legend>
+            <div class="selector-consumo">
+              <input type="radio" name="consumo" id="cCompleto" value="completo" checked>
+              <label for="cCompleto"><i class="bi bi-emoji-smile"></i>Todo</label>
+              <input type="radio" name="consumo" id="cParcial" value="parcial">
+              <label for="cParcial"><i class="bi bi-emoji-neutral"></i>Una parte</label>
+              <input type="radio" name="consumo" id="cNulo" value="nulo">
+              <label for="cNulo"><i class="bi bi-emoji-frown"></i>Nada</label>
+            </div>
+          </fieldset>
+          <label class="form-label" for="rObs">Observaciones</label>
+          <input class="form-control" id="rObs" name="observaciones" maxlength="255" placeholder="Ej. Dejó la papaya, se veía decaído">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Registrar ración</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js" defer></script>
+  <script src="/assets/js/core/api.js" defer></script>
+  <script src="/assets/js/core/ui.js" defer></script>
+  <script src="/assets/js/core/etiquetas.js" defer></script>
+  <script src="/assets/js/core/layout.js" defer></script>
+  <script src="/assets/js/modulos/alimentacion/etiquetas.js" defer></script>
+  <script src="/assets/js/modulos/alimentacion/comun.js" defer></script>
+  <script src="/assets/js/modulos/alimentacion/raciones.js" defer></script>
+</body>
+</html>

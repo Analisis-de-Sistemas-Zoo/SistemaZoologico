@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Inventario de alimentos | Mirada Salvaje</title>
+  <link rel="icon" href="/assets/img/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/vendor/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/vendor/bootstrap-icons/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="/assets/css/zoo.css">
+</head>
+<body class="cargando">
+
+  <main class="app-main" data-titulo="Inventario de alimentos">
+    <div class="pagina-encabezado">
+      <div>
+        <h2>Inventario de alimentos</h2>
+        <p>Existencia de cada alimento calculada desde sus lotes. Los lotes vencidos no cuentan como existencia; el consumo sale siempre del lote que vence primero.</p>
+      </div>
+      <div class="d-flex flex-wrap gap-2">
+        <a class="btn btn-outline-primary" href="/app/alimentacion/lotes.html?nueva=1" id="btnEntrada"><i class="bi bi-truck me-2"></i>Registrar entrada</a>
+        <button class="btn btn-primary" type="button" id="btnNuevo"><i class="bi bi-plus-lg me-2"></i>Nuevo alimento</button>
+      </div>
+    </div>
+
+    <div class="resumen mb-3" id="alertas" aria-live="polite"></div>
+
+    <section class="panel">
+      <form class="filtros" id="formFiltros">
+        <div>
+          <label class="form-label" for="fBuscar">Buscar</label>
+          <input class="form-control" id="fBuscar" name="buscar" placeholder="Nombre del alimento">
+        </div>
+        <div>
+          <label class="form-label" for="fCategoria">Categoría</label>
+          <select class="form-select" id="fCategoria" name="categoria"></select>
+        </div>
+        <div>
+          <label class="form-label" for="fAlerta">Alerta</label>
+          <select class="form-select" id="fAlerta" name="alerta"></select>
+        </div>
+        <div>
+          <label class="form-label" for="fActivo">Estado</label>
+          <select class="form-select" id="fActivo" name="activo">
+            <option value="1">Activos</option>
+            <option value="0">Inactivos</option>
+            <option value="">Todos</option>
+          </select>
+        </div>
+      </form>
+      <div class="table-responsive">
+        <table class="table table-hover tabla-zoo">
+          <thead>
+            <tr>
+              <th>Alimento</th>
+              <th>Categoría</th>
+              <th class="text-end">Existencia</th>
+              <th>Nivel</th>
+              <th>Próximo vencimiento</th>
+              <th class="text-end">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tabla"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <!-- Registrar / editar alimento -->
+  <div class="modal fade" id="modalEditar" tabindex="-1" aria-labelledby="tituloModal" aria-hidden="true">
+    <div class="modal-dialog">
+      <form class="modal-content" id="formEditar" novalidate>
+        <div class="modal-header">
+          <h5 class="modal-title" id="tituloModal">Nuevo alimento</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <div class="alert alert-danger d-none" data-error-general role="alert"></div>
+          <div class="row g-3">
+            <div class="col-12">
+              <label class="form-label" for="aNombre">Nombre</label>
+              <input class="form-control" id="aNombre" name="nombre" maxlength="100" placeholder="Ej. Carne de res" required>
+            </div>
+            <div class="col-sm-6">
+              <label class="form-label" for="aCategoria">Categoría</label>
+              <select class="form-select" id="aCategoria" name="categoria" required></select>
+            </div>
+            <div class="col-sm-6">
+              <label class="form-label" for="aUnidad">Unidad de medida</label>
+              <select class="form-select" id="aUnidad" name="unidad_medida" required></select>
+              <div class="form-text d-none" id="avisoUnidad">No se puede cambiar si ya tiene lotes.</div>
+            </div>
+            <div class="col-sm-6">
+              <label class="form-label" for="aMinimo">Existencia mínima</label>
+              <input class="form-control" id="aMinimo" name="stock_minimo" type="number" min="0" step="0.001" required>
+              <div class="form-text">Al llegar a este valor aparece la alerta.</div>
+            </div>
+            <div class="col-sm-6">
+              <label class="form-label" for="aAviso">Avisar antes de vencer</label>
+              <div class="input-group">
+                <input class="form-control" id="aAviso" name="dias_aviso_vencimiento" type="number" min="0" max="365" step="1" value="7" required>
+                <span class="input-group-text">días</span>
+              </div>
+            </div>
+            <div class="col-12">
+              <label class="form-label" for="aDescripcion">Descripción</label>
+              <input class="form-control" id="aDescripcion" name="descripcion" maxlength="255" placeholder="Ej. Cortes sin hueso">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Guardar alimento</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Historial -->
+  <div class="modal fade" id="modalHistorial" tabindex="-1" aria-labelledby="tituloHistorial" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="tituloHistorial">Historial</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body p-0">
+          <div class="px-3 pt-3" id="infoHistorial"></div>
+          <div class="table-responsive">
+            <table class="table tabla-zoo mb-0">
+              <thead><tr><th>Fecha</th><th>Movimiento</th><th>Lote</th><th class="text-end">Cantidad</th><th>Detalle</th><th>Registró</th></tr></thead>
+              <tbody id="tablaHistorial"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js" defer></script>
+  <script src="/assets/js/core/api.js" defer></script>
+  <script src="/assets/js/core/ui.js" defer></script>
+  <script src="/assets/js/core/etiquetas.js" defer></script>
+  <script src="/assets/js/core/crud.js" defer></script>
+  <script src="/assets/js/core/layout.js" defer></script>
+  <script src="/assets/js/modulos/alimentacion/etiquetas.js" defer></script>
+  <script src="/assets/js/modulos/alimentacion/comun.js" defer></script>
+  <script src="/assets/js/modulos/alimentacion/inventario.js" defer></script>
+</body>
+</html>

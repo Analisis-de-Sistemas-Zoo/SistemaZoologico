@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hábitats | Mirada Salvaje</title>
+  <link rel="icon" href="/assets/img/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/vendor/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/vendor/bootstrap-icons/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="/assets/css/zoo.css">
+</head>
+<body class="cargando">
+
+  <main class="app-main" data-titulo="Hábitats">
+    <div class="pagina-encabezado">
+      <div>
+        <h2>Hábitats</h2>
+        <p>Zonas temáticas del zoológico. Cada jaula o recinto pertenece a un hábitat.</p>
+      </div>
+      <button class="btn btn-primary" type="button" id="btnNuevo"><i class="bi bi-plus-lg me-2"></i>Nuevo hábitat</button>
+    </div>
+
+    <section class="panel">
+      <form class="filtros" id="formFiltros">
+        <div>
+          <label class="form-label" for="fBuscar">Buscar</label>
+          <input class="form-control" id="fBuscar" name="buscar" placeholder="Nombre o ubicación">
+        </div>
+        <div>
+          <label class="form-label" for="fTipo">Tipo</label>
+          <select class="form-select" id="fTipo" name="tipo"></select>
+        </div>
+        <div>
+          <label class="form-label" for="fActivo">Estado</label>
+          <select class="form-select" id="fActivo" name="activo">
+            <option value="1">Activos</option>
+            <option value="0">Inactivos</option>
+            <option value="">Todos</option>
+          </select>
+        </div>
+      </form>
+      <div class="table-responsive">
+        <table class="table table-hover tabla-zoo">
+          <thead>
+            <tr>
+              <th>Hábitat</th>
+              <th>Tipo</th>
+              <th>Ubicación</th>
+              <th class="text-end">Capacidad</th>
+              <th class="text-end">Jaulas</th>
+              <th class="text-end">Animales</th>
+              <th>Estado</th>
+              <th class="text-end">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tabla"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal fade" id="modalEditar" tabindex="-1" aria-labelledby="tituloModal" aria-hidden="true">
+    <div class="modal-dialog">
+      <form class="modal-content" id="formEditar" novalidate>
+        <div class="modal-header">
+          <h5 class="modal-title" id="tituloModal">Nuevo hábitat</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <div class="alert alert-danger d-none" data-error-general role="alert"></div>
+          <div class="row g-3">
+            <div class="col-12">
+              <label class="form-label" for="hNombre">Nombre</label>
+              <input class="form-control" id="hNombre" name="nombre" maxlength="80" required>
+            </div>
+            <div class="col-sm-6">
+              <label class="form-label" for="hTipo">Tipo</label>
+              <select class="form-select" id="hTipo" name="tipo" required></select>
+            </div>
+            <div class="col-sm-6">
+              <label class="form-label" for="hCapacidad">Capacidad máxima <span class="text-secondary fw-normal">(animales)</span></label>
+              <input class="form-control" id="hCapacidad" name="capacidad_max" type="number" min="1" step="1">
+            </div>
+            <div class="col-12">
+              <label class="form-label" for="hUbicacion">Ubicación</label>
+              <input class="form-control" id="hUbicacion" name="ubicacion" maxlength="100" placeholder="Ej. Sector norte">
+            </div>
+            <div class="col-12">
+              <label class="form-label" for="hDescripcion">Descripción</label>
+              <textarea class="form-control" id="hDescripcion" name="descripcion" rows="2" maxlength="255"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Guardar hábitat</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js" defer></script>
+  <script src="/assets/js/core/api.js" defer></script>
+  <script src="/assets/js/core/ui.js" defer></script>
+  <script src="/assets/js/core/etiquetas.js" defer></script>
+  <script src="/assets/js/core/crud.js" defer></script>
+  <script src="/assets/js/core/layout.js" defer></script>
+  <script src="/assets/js/paginas/catalogos/habitats.js" defer></script>
+</body>
+</html>

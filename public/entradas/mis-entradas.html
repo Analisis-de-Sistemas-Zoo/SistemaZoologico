@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Vuelve a ver e imprimir las entradas que compraste en línea.">
+  <title>Mis entradas | Zoológico Mirada Salvaje</title>
+  <link rel="icon" href="/assets/img/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/vendor/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/vendor/bootstrap-icons/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="/assets/css/zoo.css">
+  <link rel="stylesheet" href="/assets/css/publico.css">
+</head>
+<body>
+
+  <header class="portal-encabezado">
+    <nav class="navbar" aria-label="Navegación principal">
+      <div class="container">
+        <a class="portal-marca" href="/"><img src="/assets/img/logo.svg" alt="">Mirada Salvaje</a>
+        <a class="btn btn-acento btn-sm" href="/entradas/comprar.html"><i class="bi bi-ticket-perforated me-1"></i>Comprar entradas</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container py-4 py-lg-5">
+    <h1 class="mb-1">Mis entradas</h1>
+    <p class="text-secondary mb-4">Escribe tu número de compra y el correo con el que compraste para ver e imprimir tus entradas.</p>
+
+    <form class="panel panel-cuerpo mb-4" id="formConsulta" novalidate style="max-width: 40rem">
+      <div class="alert alert-danger d-none" data-error-general role="alert"></div>
+      <div class="row g-3 align-items-end">
+        <div class="col-sm-5">
+          <label class="form-label" for="cCodigo">Número de compra</label>
+          <input class="form-control text-uppercase" id="cCodigo" name="codigo" maxlength="9" placeholder="MS-000123" autocomplete="off" required>
+        </div>
+        <div class="col-sm-7">
+          <label class="form-label" for="cCorreo">Correo electrónico</label>
+          <input class="form-control" type="email" id="cCorreo" name="correo" maxlength="120" autocomplete="email" required>
+        </div>
+        <div class="col-12">
+          <button class="btn btn-primary" type="submit"><i class="bi bi-search me-2"></i>Buscar mis entradas</button>
+        </div>
+      </div>
+    </form>
+
+    <section id="resultado" aria-live="polite"></section>
+  </main>
+
+  <footer class="portal-pie">
+    <div class="container d-flex flex-wrap justify-content-between gap-2">
+      <span>Zoológico Mirada Salvaje, Jutiapa, Guatemala</span>
+      <a href="/">Volver al inicio</a>
+    </div>
+  </footer>
+
+  <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js" defer></script>
+  <script src="/vendor/qrcode/qrcode.js" defer></script>
+  <script src="/assets/js/core/api.js" defer></script>
+  <script src="/assets/js/core/ui.js" defer></script>
+  <script src="/assets/js/core/etiquetas.js" defer></script>
+  <script src="/assets/js/modulos/entradas/etiquetas.js" defer></script>
+  <script src="/assets/js/modulos/entradas/boletos.js" defer></script>
+  <script src="/assets/js/publico/mis-entradas.js" defer></script>
+</body>
+</html>

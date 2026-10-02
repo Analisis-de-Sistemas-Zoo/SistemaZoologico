@@ -11,7 +11,8 @@
     "db:down": "docker compose down",
     "db:reset": "docker compose down -v && docker compose up -d",
     "db:logs": "docker compose logs -f mysql",
-    "hash": "node server/utils/generar-hash.js"
+    "hash": "node server/utils/generar-hash.js",
+    "test": "node pruebas/index.js"
   },
   "engines": {
     "node": ">=20"
@@ -31,7 +32,8 @@
     "helmet": "^8.1.0",
     "jspdf": "^4.2.1",
     "jspdf-autotable": "^5.0.8",
-    "mysql2": "^3.14.0"
+    "mysql2": "^3.14.0",
+    "qrcode-generator": "^1.5.2"
   },
   "overrides": {
     "uuid": "^11.1.1"

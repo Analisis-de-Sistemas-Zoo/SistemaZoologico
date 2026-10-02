@@ -35,8 +35,16 @@ function validar(reglas) {
   };
 }
 
+/**
+ * Campos que pasaron por las reglas. Los textos vacíos se convierten en null
+ * para que en la BD queden como NULL y no como ''.
+ */
 function datosValidos(req, ubicaciones = ['body']) {
-  return matchedData(req, { locations: ubicaciones, includeOptionals: true });
+  const datos = matchedData(req, { locations: ubicaciones, includeOptionals: true });
+  for (const [campo, valor] of Object.entries(datos)) {
+    if (valor === '' || valor === undefined) datos[campo] = null;
+  }
+  return datos;
 }
 
 module.exports = validar;

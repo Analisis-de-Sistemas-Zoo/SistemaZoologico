@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ventas | Mirada Salvaje</title>
+  <link rel="icon" href="/assets/img/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/vendor/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/vendor/bootstrap-icons/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="/assets/css/zoo.css">
+</head>
+<body class="cargando">
+
+  <main class="app-main" data-titulo="Ventas de entradas">
+    <div class="pagina-encabezado">
+      <div>
+        <h2>Ventas de entradas</h2>
+        <p>Compras en línea y ventas en taquilla. Abre una venta para ver o reimprimir sus entradas.</p>
+      </div>
+    </div>
+
+    <div class="resumen mb-3" id="totales"></div>
+
+    <section class="panel">
+      <form class="filtros" id="formFiltros">
+        <div>
+          <label class="form-label" for="fDesde">Desde</label>
+          <input class="form-control" type="date" id="fDesde" name="desde">
+        </div>
+        <div>
+          <label class="form-label" for="fHasta">Hasta</label>
+          <input class="form-control" type="date" id="fHasta" name="hasta">
+        </div>
+        <div>
+          <label class="form-label" for="fCanal">Canal</label>
+          <select class="form-select" id="fCanal" name="canal"></select>
+        </div>
+        <div>
+          <label class="form-label" for="fEstado">Estado</label>
+          <select class="form-select" id="fEstado" name="estado"></select>
+        </div>
+        <div>
+          <label class="form-label" for="fBuscar">Buscar</label>
+          <input class="form-control" id="fBuscar" name="buscar" placeholder="Número, cliente o NIT">
+        </div>
+      </form>
+      <div class="table-responsive">
+        <table class="table table-hover tabla-zoo">
+          <thead>
+            <tr>
+              <th>Compra</th>
+              <th>Fecha</th>
+              <th>Visita</th>
+              <th>Canal</th>
+              <th>Cliente</th>
+              <th class="text-end">Entradas</th>
+              <th class="text-end">Total</th>
+              <th>Estado</th>
+              <th class="text-end">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tabla"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <!-- Entradas emitidas -->
+  <div class="modal fade" id="modalBoletos" tabindex="-1" aria-labelledby="tituloBoletos" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="tituloBoletos">Entradas</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <div id="infoBoletos"></div>
+          <div id="boletos"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cerrar</button>
+          <button type="button" class="btn btn-primary" id="btnImprimir"><i class="bi bi-printer me-2"></i>Imprimir entradas</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js" defer></script>
+  <script src="/vendor/qrcode/qrcode.js" defer></script>
+  <script src="/assets/js/core/api.js" defer></script>
+  <script src="/assets/js/core/ui.js" defer></script>
+  <script src="/assets/js/core/etiquetas.js" defer></script>
+  <script src="/assets/js/core/crud.js" defer></script>
+  <script src="/assets/js/core/layout.js" defer></script>
+  <script src="/assets/js/modulos/entradas/etiquetas.js" defer></script>
+  <script src="/assets/js/modulos/entradas/boletos.js" defer></script>
+  <script src="/assets/js/modulos/entradas/ventas.js" defer></script>
+</body>
+</html>

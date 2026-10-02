@@ -1,0 +1,775 @@
+// Modelo entidad-relación — Sistema de control del zoológico "Mirada Salvaje"
+// Generado desde la base de datos. Pégalo en https://dbdiagram.io/d para ver el diagrama.
+
+Project ZoologicoMiradaSalvaje {
+  database_type: 'MySQL'
+  Note: 'Sistema de control del zoológico Mirada Salvaje'
+}
+
+Table rol {
+  id "tinyint unsigned" [pk, increment]
+  codigo "varchar(30)" [not null, unique, note: 'Identificador usado en el código (server/config/permisos.js)']
+  nombre "varchar(60)" [not null]
+  descripcion "varchar(255)"
+
+  Note: 'Roles del personal. Definen a qué módulos y acciones tiene acceso cada usuario'
+}
+
+Table usuario {
+  id "int unsigned" [pk, increment]
+  rol_id "tinyint unsigned" [not null]
+  nombres "varchar(80)" [not null]
+  apellidos "varchar(80)" [not null]
+  usuario "varchar(40)" [not null, unique, note: 'Nombre de inicio de sesión']
+  correo "varchar(120)" [not null, unique]
+  password_hash "varchar(255)" [not null, note: 'Contraseña cifrada con bcrypt']
+  activo "tinyint(1)" [not null, default: 1]
+  intentos_fallidos "tinyint unsigned" [not null, default: 0, note: 'Intentos fallidos consecutivos de inicio de sesión']
+  bloqueado_hasta datetime [note: 'Bloqueo temporal tras varios intentos fallidos']
+  ultimo_acceso datetime
+  creado_en datetime [not null, default: `CURRENT_TIMESTAMP`]
+  actualizado_en datetime [not null, default: `CURRENT_TIMESTAMP`]
+
+  Note: 'Cuentas del personal del zoológico. Los visitantes no tienen cuenta'
+}
+
+Table sesion {
+  sid "varchar(128)" [pk]
+  usuario_id "int unsigned"
+  expira datetime [not null]
+  datos text [not null]
+
+  Note: 'Sesiones activas. Las administra el servidor'
+}
+
+Table bitacora {
+  id "bigint unsigned" [pk, increment]
+  usuario_id "int unsigned" [note: 'NULL cuando la acción ocurre sin sesión (ej. intento de login)']
+  modulo "varchar(30)" [not null]
+  accion "varchar(30)" [not null, note: 'CREAR, ACTUALIZAR, ELIMINAR, LOGIN, ACCESO_DENEGADO, etc.']
+  tabla_afectada "varchar(60)"
+  registro_id "varchar(40)"
+  detalle text [note: 'Datos del cambio en formato JSON']
+  ip "varchar(45)"
+  fecha datetime [not null, default: `CURRENT_TIMESTAMP`]
+
+  Note: 'Auditoría de todas las acciones realizadas en el sistema'
+}
+
+Table veterinario {
+  usuario_id "int unsigned" [pk, note: 'Usuario con rol veterinario']
+  num_colegiado "varchar(20)" [not null, unique, note: 'Número de colegiado activo']
+  especialidad "varchar(100)"
+
+  Note: 'Datos profesionales de los usuarios con rol veterinario'
+}
+
+Table habitat {
+  id "smallint unsigned" [pk, increment]
+  nombre "varchar(80)" [not null, unique]
+  tipo habitat_tipo [not null]
+  descripcion "varchar(255)"
+  ubicacion "varchar(100)" [note: 'Referencia dentro del zoológico (ej. sector norte)']
+  capacidad_max "smallint unsigned" [note: 'Número máximo de animales']
+  activo "tinyint(1)" [not null, default: 1]
+  creado_en datetime [not null, default: `CURRENT_TIMESTAMP`]
+  actualizado_en datetime [not null, default: `CURRENT_TIMESTAMP`]
+
+  Note: 'Zonas temáticas del zoológico que agrupan jaulas y recintos'
+}
+
+Table area {
+  id "smallint unsigned" [pk, increment]
+  habitat_id "smallint unsigned" [note: 'Obligatorio solo para las jaulas']
+  nombre "varchar(80)" [not null, unique]
+  tipo area_tipo [not null, note: 'jaula incluye jaulas, recintos y estanques donde viven animales']
+  ubicacion "varchar(100)"
+  descripcion "varchar(255)"
+  activo "tinyint(1)" [not null, default: 1]
+  creado_en datetime [not null, default: `CURRENT_TIMESTAMP`]
+  actualizado_en datetime [not null, default: `CURRENT_TIMESTAMP`]
+
+  Note: 'Lugares físicos del zoológico. Se usan en limpieza (todas) y en alimentación (jaulas)'
+}
+
+Table especie {
+  id "smallint unsigned" [pk, increment]
+  nombre_comun "varchar(100)" [not null]
+  nombre_cientifico "varchar(120)" [not null, unique]
+  clasificacion especie_clasificacion [not null]
+  tipo_dieta especie_tipo_dieta [not null]
+  estado_conservacion especie_estado_conservacion [note: 'Categoría de la Lista Roja de la UICN']
+  descripcion "varchar(500)"
+  activo "tinyint(1)" [not null, default: 1]
+  creado_en datetime [not null, default: `CURRENT_TIMESTAMP`]
+  actualizado_en datetime [not null, default: `CURRENT_TIMESTAMP`]
+
+  Note: 'Especies animales que alberga el zoológico'
+}
+
+Table animal {
+  id "int unsigned" [pk, increment]
+  codigo "varchar(20)" [not null, unique, note: 'Identificador visible, ej. ANI-0001']
+  nombre "varchar(80)" [not null]
+  especie_id "smallint unsigned" [not null]
+  area_id "smallint unsigned" [not null, note: 'Jaula o recinto donde vive']
+  sexo animal_sexo [not null, default: 'desconocido']
+  fecha_nacimiento date
+  fecha_ingreso date [not null]
+  procedencia "varchar(120)" [note: 'Nacido en el zoológico, rescate, intercambio, etc.']
+  peso_kg "decimal(8,2)"
+  estado_salud animal_estado_salud [not null, default: 'sano', note: 'Lo actualiza el módulo de Control Clínico']
+  estado animal_estado [not null, default: 'activo']
+  observaciones "varchar(500)"
+  creado_en datetime [not null, default: `CURRENT_TIMESTAMP`]
+  actualizado_en datetime [not null, default: `CURRENT_TIMESTAMP`]
+
+  Note: 'Animales del zoológico'
+}
+
+Table insumo_limpieza {
+  id "smallint unsigned" [pk, increment]
+  nombre "varchar(100)" [not null, unique]
+  unidad_medida insumo_limpieza_unidad_medida [not null]
+  stock_actual "decimal(10,2)" [not null, default: 0.00]
+  stock_minimo "decimal(10,2)" [not null, default: 0.00, note: 'Al llegar a este valor se genera alerta']
+  descripcion "varchar(255)"
+  activo "tinyint(1)" [not null, default: 1]
+  creado_en datetime [not null, default: `CURRENT_TIMESTAMP`]
+  actualizado_en datetime [not null, default: `CURRENT_TIMESTAMP`]
+
+  Note: 'Productos e insumos de limpieza con su existencia'
+}
+
+Table tarea_limpieza {
+  id "int unsigned" [pk, increment]
+  area_id "smallint unsigned" [not null]
+  tipo tarea_limpieza_tipo [not null, default: 'rutinaria']
+  descripcion "varchar(255)" [note: 'Indicaciones específicas para la tarea']
+  fecha_programada date [not null]
+  hora_programada time [not null]
+  asignado_id "int unsigned" [not null, note: 'Usuario del personal de limpieza que la ejecuta']
+  programado_por_id "int unsigned" [not null, note: 'Usuario que programó la tarea']
+  estado tarea_limpieza_estado [not null, default: 'pendiente']
+  inicio_real datetime
+  fin_real datetime
+  observaciones "varchar(500)" [note: 'Lo que reporta quien ejecuta la tarea']
+  verificado_por_id "int unsigned" [note: 'Supervisor que verificó o rechazó la tarea']
+  fecha_verificacion datetime
+  observacion_verificacion "varchar(500)"
+  creado_en datetime [not null, default: `CURRENT_TIMESTAMP`]
+  actualizado_en datetime [not null, default: `CURRENT_TIMESTAMP`]
+
+  Note: 'Tareas de limpieza programadas por área, con su ejecución y verificación'
+}
+
+Table tarea_insumo {
+  tarea_id "int unsigned" [not null]
+  insumo_limpieza_id "smallint unsigned" [not null]
+  cantidad_usada "decimal(10,2)" [not null]
+
+  indexes {
+    (tarea_id, insumo_limpieza_id) [pk]
+  }
+
+  Note: 'Insumos de limpieza consumidos en cada tarea'
+}
+
+Table movimiento_insumo_limpieza {
+  id "int unsigned" [pk, increment]
+  insumo_limpieza_id "smallint unsigned" [not null]
+  tipo movimiento_insumo_limpieza_tipo [not null, note: 'entrada suma al stock; salida y merma restan']
+  cantidad "decimal(10,2)" [not null]
+  tarea_id "int unsigned" [note: 'Tarea en la que se usó (salidas)']
+  motivo "varchar(255)"
+  usuario_id "int unsigned" [not null, note: 'Quién registró el movimiento']
+  fecha datetime [not null, default: `CURRENT_TIMESTAMP`]
+
+  Note: 'Historial de entradas y salidas de insumos de limpieza'
+}
+
+Table proveedor {
+  id "smallint unsigned" [pk, increment]
+  nombre "varchar(120)" [not null, unique]
+  nit "varchar(20)" [unique]
+  contacto "varchar(100)" [note: 'Persona de contacto']
+  telefono "varchar(20)"
+  correo "varchar(120)"
+  direccion "varchar(200)"
+  activo "tinyint(1)" [not null, default: 1]
+  creado_en datetime [not null, default: `CURRENT_TIMESTAMP`]
+  actualizado_en datetime [not null, default: `CURRENT_TIMESTAMP`]
+
+  Note: 'Proveedores de alimentos para los animales'
+}
+
+Table alimento {
+  id "smallint unsigned" [pk, increment]
+  nombre "varchar(100)" [not null, unique]
+  categoria alimento_categoria [not null]
+  unidad_medida alimento_unidad_medida [not null, default: 'kg']
+  stock_minimo "decimal(10,3)" [not null, default: 0.000, note: 'Al llegar a este valor se genera alerta de stock']
+  dias_aviso_vencimiento "smallint unsigned" [not null, default: 7, note: 'Días antes del vencimiento en que se genera alerta']
+  descripcion "varchar(255)"
+  activo "tinyint(1)" [not null, default: 1]
+  creado_en datetime [not null, default: `CURRENT_TIMESTAMP`]
+  actualizado_en datetime [not null, default: `CURRENT_TIMESTAMP`]
+
+  Note: 'Catálogo de productos alimenticios'
+}
+
+Table lote_alimento {
+  id "int unsigned" [pk, increment]
+  alimento_id "smallint unsigned" [not null]
+  proveedor_id "smallint unsigned" [not null]
+  numero_lote "varchar(40)" [not null]
+  numero_factura "varchar(40)"
+  fecha_ingreso date [not null]
+  fecha_vencimiento date [note: 'NULL si el producto no vence']
+  cantidad_inicial "decimal(10,3)" [not null]
+  cantidad_disponible "decimal(10,3)" [not null, note: 'Se reduce con cada consumo o merma']
+  costo_unitario "decimal(10,2)" [note: 'Quetzales por unidad de medida']
+  usuario_id "int unsigned" [not null, note: 'Encargado de bodega que registró la entrada']
+  observaciones "varchar(255)"
+  creado_en datetime [not null, default: `CURRENT_TIMESTAMP`]
+
+  indexes {
+    (alimento_id, numero_lote) [unique, name: 'uq_lote_alimento_numero']
+  }
+
+  Note: 'Cada entrada de alimento por compra. Es también el historial de compras por proveedor'
+}
+
+Table dieta {
+  id "int unsigned" [pk, increment]
+  especie_id "smallint unsigned" [note: 'Dieta general de la especie']
+  animal_id "int unsigned" [note: 'Dieta particular de un animal (reemplaza a la de su especie)']
+  alimento_id "smallint unsigned" [not null]
+  cantidad_racion "decimal(10,3)" [not null, note: 'Cantidad por ración en la unidad del alimento']
+  frecuencia_diaria "tinyint unsigned" [not null, default: 1, note: 'Raciones por día']
+  indicaciones "varchar(255)" [note: 'Forma de preparación o entrega']
+  motivo "varchar(255)" [note: 'Razón de la dieta o del cambio (ej. indicación clínica)']
+  veterinario_id "int unsigned" [not null, note: 'Veterinario que definió la dieta']
+  fecha_inicio date [not null]
+  fecha_fin date
+  activa "tinyint(1)" [not null, default: 1]
+  creado_en datetime [not null, default: `CURRENT_TIMESTAMP`]
+  actualizado_en datetime [not null, default: `CURRENT_TIMESTAMP`]
+
+  Note: 'Dietas definidas por el veterinario para una especie o para un animal en particular'
+}
+
+Table horario_alimentacion {
+  id "int unsigned" [pk, increment]
+  area_id "smallint unsigned" [not null, note: 'Jaula o recinto']
+  hora time [not null]
+  dias set [not null, default: 'lun,mar,mie,jue,vie,sab,dom', note: 'Valores combinables: lun, mar, mie, jue, vie, sab, dom']
+  cuidador_id "int unsigned" [not null, note: 'Cuidador responsable']
+  observaciones "varchar(255)"
+  activo "tinyint(1)" [not null, default: 1]
+  creado_en datetime [not null, default: `CURRENT_TIMESTAMP`]
+  actualizado_en datetime [not null, default: `CURRENT_TIMESTAMP`]
+
+  indexes {
+    (area_id, hora) [unique, name: 'uq_horario_area_hora']
+  }
+
+  Note: 'Horarios de alimentación de cada jaula y su cuidador responsable'
+}
+
+Table registro_alimentacion {
+  id "int unsigned" [pk, increment]
+  dieta_id "int unsigned" [not null]
+  animal_id "int unsigned" [not null]
+  horario_id "int unsigned" [note: 'Turno al que corresponde; NULL si fue una ración fuera de horario']
+  usuario_id "int unsigned" [not null, note: 'Cuidador que suministró la ración']
+  fecha date [not null]
+  hora time [not null]
+  cantidad_suministrada "decimal(10,3)" [not null]
+  consumo registro_alimentacion_consumo [not null, default: 'completo', note: 'Lo que el animal consumió de la ración']
+  observaciones "varchar(255)"
+  creado_en datetime [not null, default: `CURRENT_TIMESTAMP`]
+
+  indexes {
+    (animal_id, dieta_id, horario_id, fecha) [unique, name: 'uq_registro_turno']
+  }
+
+  Note: 'Cada ración suministrada a un animal (trazabilidad del consumo)'
+}
+
+Table movimiento_alimento {
+  id "int unsigned" [pk, increment]
+  lote_id "int unsigned" [not null]
+  tipo movimiento_alimento_tipo [not null, note: 'entrada suma; consumo y merma restan']
+  cantidad "decimal(10,3)" [not null]
+  registro_id "int unsigned" [note: 'Ración que originó el consumo']
+  motivo "varchar(255)" [note: 'Obligatorio para las mermas']
+  usuario_id "int unsigned" [not null]
+  fecha datetime [not null, default: `CURRENT_TIMESTAMP`]
+
+  Note: 'Historial de entradas, consumos y mermas de cada lote'
+}
+
+Table insumo_clinico {
+  id "smallint unsigned" [pk, increment]
+  tipo insumo_clinico_tipo [not null]
+  nombre "varchar(100)" [not null]
+  presentacion "varchar(80)" [not null, default: '', note: 'Ej. frasco 50 ml, tabletas 500 mg']
+  unidad_medida insumo_clinico_unidad_medida [not null]
+  stock_actual "decimal(10,2)" [not null, default: 0.00]
+  stock_minimo "decimal(10,2)" [not null, default: 0.00, note: 'Al llegar a este valor se genera alerta']
+  dosis_recomendada "varchar(100)"
+  enfermedad_previene "varchar(120)" [note: 'Solo vacunas']
+  intervalo_refuerzo_dias "smallint unsigned" [note: 'Solo vacunas: días hasta la siguiente dosis']
+  activo "tinyint(1)" [not null, default: 1]
+  creado_en datetime [not null, default: `CURRENT_TIMESTAMP`]
+  actualizado_en datetime [not null, default: `CURRENT_TIMESTAMP`]
+
+  indexes {
+    (tipo, nombre, presentacion) [unique, name: 'uq_insumo_clinico']
+  }
+
+  Note: 'Medicamentos, vacunas y vitaminas con su existencia'
+}
+
+Table consulta_clinica {
+  id "int unsigned" [pk, increment]
+  animal_id "int unsigned" [not null]
+  veterinario_id "int unsigned" [not null]
+  fecha datetime [not null]
+  tipo consulta_clinica_tipo [not null, default: 'rutina']
+  motivo "varchar(255)" [not null]
+  sintomas text
+  diagnostico text
+  tratamiento text
+  peso_kg "decimal(8,2)"
+  temperatura_c "decimal(4,1)"
+  estado_salud_resultante consulta_clinica_estado_salud_resultante [not null, note: 'Se copia a animal.estado_salud al guardar la consulta']
+  proxima_revision date
+  observaciones text
+  creado_en datetime [not null, default: `CURRENT_TIMESTAMP`]
+
+  Note: 'Consultas veterinarias. En conjunto forman el expediente clínico de cada animal'
+}
+
+Table aplicacion_clinica {
+  id "int unsigned" [pk, increment]
+  animal_id "int unsigned" [not null]
+  insumo_clinico_id "smallint unsigned" [not null]
+  veterinario_id "int unsigned" [not null]
+  consulta_id "int unsigned" [note: 'Consulta en la que se indicó (opcional para vacunas de rutina)']
+  dosis "decimal(10,2)" [not null, note: 'En la unidad de medida del insumo']
+  via aplicacion_clinica_via [not null]
+  fecha_aplicacion datetime [not null]
+  proxima_dosis date [note: 'Base de las alertas de vacunas y tratamientos pendientes']
+  observaciones "varchar(255)"
+  creado_en datetime [not null, default: `CURRENT_TIMESTAMP`]
+
+  Note: 'Cada aplicación de medicamento, vacuna o vitamina a un animal'
+}
+
+Table movimiento_clinico {
+  id "int unsigned" [pk, increment]
+  insumo_clinico_id "smallint unsigned" [not null]
+  tipo movimiento_clinico_tipo [not null, note: 'entrada suma; salida y merma restan']
+  cantidad "decimal(10,2)" [not null]
+  aplicacion_id "int unsigned" [note: 'Aplicación que originó la salida']
+  numero_lote "varchar(40)"
+  fecha_vencimiento date [note: 'Del lote recibido (entradas)']
+  motivo "varchar(255)"
+  usuario_id "int unsigned" [not null]
+  fecha datetime [not null, default: `CURRENT_TIMESTAMP`]
+
+  Note: 'Historial de entradas y salidas de medicamentos, vacunas y vitaminas'
+}
+
+Table tipo_entrada {
+  id "tinyint unsigned" [pk, increment]
+  nombre "varchar(60)" [not null, unique]
+  descripcion "varchar(200)"
+  precio "decimal(10,2)" [not null, note: 'Quetzales']
+  activo "tinyint(1)" [not null, default: 1]
+  creado_en datetime [not null, default: `CURRENT_TIMESTAMP`]
+  actualizado_en datetime [not null, default: `CURRENT_TIMESTAMP`]
+
+  Note: 'Tipos de entrada y su precio'
+}
+
+Table promocion {
+  id "smallint unsigned" [pk, increment]
+  nombre "varchar(100)" [not null]
+  descripcion "varchar(255)"
+  descuento_porcentaje "decimal(5,2)" [not null]
+  tipo_entrada_id "tinyint unsigned" [note: 'NULL = aplica a todos los tipos de entrada']
+  cantidad_minima "tinyint unsigned" [not null, default: 1, note: 'Entradas mínimas en la compra para aplicar']
+  codigo "varchar(20)" [unique, note: 'Cupón opcional que el cliente debe ingresar']
+  fecha_inicio date [not null]
+  fecha_fin date [not null]
+  publicada "tinyint(1)" [not null, default: 1, note: 'Se muestra en el portal público']
+  activa "tinyint(1)" [not null, default: 1]
+  creado_en datetime [not null, default: `CURRENT_TIMESTAMP`]
+  actualizado_en datetime [not null, default: `CURRENT_TIMESTAMP`]
+
+  Note: 'Promociones y descuentos con vigencia'
+}
+
+Table cliente {
+  id "int unsigned" [pk, increment]
+  nombre "varchar(120)" [not null]
+  correo "varchar(120)" [note: 'Obligatorio en compras web; opcional en taquilla']
+  telefono "varchar(20)"
+  nit "varchar(20)" [not null, default: 'CF']
+  creado_en datetime [not null, default: `CURRENT_TIMESTAMP`]
+
+  Note: 'Datos de quien compra (en línea o en taquilla). No tiene usuario ni contraseña'
+}
+
+Table compra {
+  id "int unsigned" [pk, increment]
+  codigo "varchar(20)" [not null, unique, note: 'Número de compra visible, ej. MS-000123']
+  canal compra_canal [not null]
+  cliente_id "int unsigned" [note: 'Obligatorio en ventas web']
+  vendedor_id "int unsigned" [note: 'Taquillero; obligatorio en ventas de taquilla']
+  fecha datetime [not null, default: `CURRENT_TIMESTAMP`]
+  fecha_visita date [not null]
+  subtotal "decimal(10,2)" [not null]
+  descuento "decimal(10,2)" [not null, default: 0.00]
+  total "decimal(10,2)" [not null]
+  metodo_pago compra_metodo_pago [not null]
+  referencia_pago "varchar(60)" [note: 'Autorización simulada de la tarjeta']
+  estado compra_estado [not null, default: 'pagada']
+  motivo_anulacion "varchar(255)"
+  anulado_por_id "int unsigned"
+  fecha_anulacion datetime
+
+  Note: 'Ventas de entradas por la web o en taquilla'
+}
+
+Table detalle_compra {
+  id "int unsigned" [pk, increment]
+  compra_id "int unsigned" [not null]
+  tipo_entrada_id "tinyint unsigned" [not null]
+  promocion_id "smallint unsigned"
+  cantidad "smallint unsigned" [not null]
+  precio_unitario "decimal(10,2)" [not null, note: 'Precio vigente al momento de la compra']
+  descuento "decimal(10,2)" [not null, default: 0.00, note: 'Monto total descontado en esta línea']
+  subtotal "decimal(10,2)" [not null, note: 'cantidad x precio_unitario - descuento']
+
+  Note: 'Líneas de cada compra por tipo de entrada'
+}
+
+Table entrada {
+  id "int unsigned" [pk, increment]
+  detalle_id "int unsigned" [not null]
+  codigo_qr "char(32)" [not null, unique, note: 'Código aleatorio único que contiene el QR']
+  estado entrada_estado [not null, default: 'vigente', note: 'Una entrada vigente con fecha de visita pasada se considera vencida']
+  fecha_uso datetime
+  validador_id "int unsigned" [note: 'Taquillero que validó el ingreso']
+
+  Note: 'Una entrada por persona, identificada con un código QR'
+}
+
+// ---------------------------------------------------------------- Valores permitidos
+Enum habitat_tipo {
+  "selva"
+  "sabana"
+  "bosque"
+  "desierto"
+  "acuatico"
+  "aviario"
+  "montana"
+  "herpetario"
+  "granja"
+}
+
+Enum area_tipo {
+  "jaula"
+  "sanitario"
+  "jardin"
+  "area_juegos"
+  "oficina"
+  "bodega"
+  "clinica"
+  "otra"
+}
+
+Enum especie_clasificacion {
+  "mamifero"
+  "ave"
+  "reptil"
+  "anfibio"
+  "pez"
+  "invertebrado"
+}
+
+Enum especie_tipo_dieta {
+  "carnivoro"
+  "herbivoro"
+  "omnivoro"
+  "insectivoro"
+  "piscivoro"
+  "frugivoro"
+  "granivoro"
+  "nectarivoro"
+}
+
+Enum especie_estado_conservacion {
+  "LC"
+  "NT"
+  "VU"
+  "EN"
+  "CR"
+  "EW"
+  "DD"
+}
+
+Enum animal_sexo {
+  "macho"
+  "hembra"
+  "desconocido"
+}
+
+Enum animal_estado_salud {
+  "sano"
+  "en_observacion"
+  "en_tratamiento"
+  "critico"
+}
+
+Enum animal_estado {
+  "activo"
+  "trasladado"
+  "fallecido"
+}
+
+Enum insumo_limpieza_unidad_medida {
+  "l"
+  "ml"
+  "kg"
+  "g"
+  "galon"
+  "unidad"
+}
+
+Enum tarea_limpieza_tipo {
+  "rutinaria"
+  "profunda"
+  "desinfeccion"
+  "emergencia"
+}
+
+Enum tarea_limpieza_estado {
+  "pendiente"
+  "en_proceso"
+  "completada"
+  "verificada"
+  "rechazada"
+  "cancelada"
+}
+
+Enum movimiento_insumo_limpieza_tipo {
+  "entrada"
+  "salida"
+  "merma"
+}
+
+Enum alimento_categoria {
+  "carne"
+  "pescado"
+  "fruta"
+  "verdura"
+  "forraje"
+  "grano"
+  "insecto"
+  "presa"
+  "concentrado"
+  "suplemento"
+  "otro"
+}
+
+Enum alimento_unidad_medida {
+  "kg"
+  "g"
+  "l"
+  "unidad"
+}
+
+Enum registro_alimentacion_consumo {
+  "completo"
+  "parcial"
+  "nulo"
+}
+
+Enum movimiento_alimento_tipo {
+  "entrada"
+  "consumo"
+  "merma"
+}
+
+Enum insumo_clinico_tipo {
+  "medicamento"
+  "vacuna"
+  "vitamina"
+}
+
+Enum insumo_clinico_unidad_medida {
+  "ml"
+  "mg"
+  "g"
+  "tableta"
+  "dosis"
+  "unidad"
+}
+
+Enum consulta_clinica_tipo {
+  "rutina"
+  "emergencia"
+  "seguimiento"
+  "ingreso"
+}
+
+Enum consulta_clinica_estado_salud_resultante {
+  "sano"
+  "en_observacion"
+  "en_tratamiento"
+  "critico"
+}
+
+Enum aplicacion_clinica_via {
+  "oral"
+  "intramuscular"
+  "subcutanea"
+  "intravenosa"
+  "topica"
+  "inhalada"
+  "otra"
+}
+
+Enum movimiento_clinico_tipo {
+  "entrada"
+  "salida"
+  "merma"
+}
+
+Enum compra_canal {
+  "web"
+  "taquilla"
+}
+
+Enum compra_metodo_pago {
+  "tarjeta"
+  "efectivo"
+  "transferencia"
+}
+
+Enum compra_estado {
+  "pagada"
+  "anulada"
+}
+
+Enum entrada_estado {
+  "vigente"
+  "usada"
+  "anulada"
+}
+
+// ---------------------------------------------------------------- Relaciones
+Ref: animal.area_id > area.id
+Ref: animal.especie_id > especie.id
+Ref: aplicacion_clinica.animal_id > animal.id
+Ref: aplicacion_clinica.consulta_id > consulta_clinica.id
+Ref: aplicacion_clinica.insumo_clinico_id > insumo_clinico.id
+Ref: aplicacion_clinica.veterinario_id > veterinario.usuario_id
+Ref: area.habitat_id > habitat.id
+Ref: bitacora.usuario_id > usuario.id
+Ref: compra.anulado_por_id > usuario.id
+Ref: compra.cliente_id > cliente.id
+Ref: compra.vendedor_id > usuario.id
+Ref: consulta_clinica.animal_id > animal.id
+Ref: consulta_clinica.veterinario_id > veterinario.usuario_id
+Ref: detalle_compra.compra_id > compra.id
+Ref: detalle_compra.promocion_id > promocion.id
+Ref: detalle_compra.tipo_entrada_id > tipo_entrada.id
+Ref: dieta.alimento_id > alimento.id
+Ref: dieta.animal_id > animal.id
+Ref: dieta.especie_id > especie.id
+Ref: dieta.veterinario_id > veterinario.usuario_id
+Ref: entrada.detalle_id > detalle_compra.id
+Ref: entrada.validador_id > usuario.id
+Ref: horario_alimentacion.area_id > area.id
+Ref: horario_alimentacion.cuidador_id > usuario.id
+Ref: lote_alimento.alimento_id > alimento.id
+Ref: lote_alimento.proveedor_id > proveedor.id
+Ref: lote_alimento.usuario_id > usuario.id
+Ref: movimiento_alimento.lote_id > lote_alimento.id
+Ref: movimiento_alimento.registro_id > registro_alimentacion.id
+Ref: movimiento_alimento.usuario_id > usuario.id
+Ref: movimiento_clinico.aplicacion_id > aplicacion_clinica.id
+Ref: movimiento_clinico.insumo_clinico_id > insumo_clinico.id
+Ref: movimiento_clinico.usuario_id > usuario.id
+Ref: movimiento_insumo_limpieza.insumo_limpieza_id > insumo_limpieza.id
+Ref: movimiento_insumo_limpieza.tarea_id > tarea_limpieza.id
+Ref: movimiento_insumo_limpieza.usuario_id > usuario.id
+Ref: promocion.tipo_entrada_id > tipo_entrada.id
+Ref: registro_alimentacion.animal_id > animal.id
+Ref: registro_alimentacion.dieta_id > dieta.id
+Ref: registro_alimentacion.horario_id > horario_alimentacion.id
+Ref: registro_alimentacion.usuario_id > usuario.id
+Ref: tarea_insumo.insumo_limpieza_id > insumo_limpieza.id
+Ref: tarea_insumo.tarea_id > tarea_limpieza.id
+Ref: tarea_limpieza.area_id > area.id
+Ref: tarea_limpieza.asignado_id > usuario.id
+Ref: tarea_limpieza.programado_por_id > usuario.id
+Ref: tarea_limpieza.verificado_por_id > usuario.id
+Ref: usuario.rol_id > rol.id
+Ref: veterinario.usuario_id > usuario.id
+
+// Núcleo: seguridad y catálogos compartidos
+TableGroup Nucleo {
+  rol
+  usuario
+  sesion
+  bitacora
+  veterinario
+  habitat
+  area
+  especie
+  animal
+}
+
+// Gestión de Limpieza
+TableGroup Limpieza {
+  insumo_limpieza
+  tarea_limpieza
+  tarea_insumo
+  movimiento_insumo_limpieza
+}
+
+// Gestión de Alimentación
+TableGroup Alimentacion {
+  proveedor
+  alimento
+  lote_alimento
+  dieta
+  horario_alimentacion
+  registro_alimentacion
+  movimiento_alimento
+}
+
+// Control Clínico
+TableGroup Clinico {
+  insumo_clinico
+  consulta_clinica
+  aplicacion_clinica
+  movimiento_clinico
+}
+
+// Gestión de Entradas y Promociones
+TableGroup Entradas {
+  tipo_entrada
+  promocion
+  cliente
+  compra
+  detalle_compra
+  entrada
+}

@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Consultas | Mirada Salvaje</title>
+  <link rel="icon" href="/assets/img/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/vendor/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/vendor/bootstrap-icons/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="/assets/css/zoo.css">
+</head>
+<body class="cargando">
+
+  <main class="app-main" data-titulo="Consultas">
+    <div class="pagina-encabezado">
+      <div>
+        <h2>Consultas veterinarias</h2>
+        <p>Registro de cada atención: motivo, diagnóstico, tratamiento y lo que se aplicó.</p>
+      </div>
+      <button class="btn btn-primary" type="button" id="btnNueva"><i class="bi bi-plus-lg me-2"></i>Nueva consulta</button>
+    </div>
+
+    <section class="panel">
+      <form class="filtros" id="formFiltros">
+        <div>
+          <label class="form-label" for="fDesde">Desde</label>
+          <input class="form-control" type="date" id="fDesde" name="desde">
+        </div>
+        <div>
+          <label class="form-label" for="fHasta">Hasta</label>
+          <input class="form-control" type="date" id="fHasta" name="hasta">
+        </div>
+        <div>
+          <label class="form-label" for="fAnimal">Animal</label>
+          <select class="form-select" id="fAnimal" name="animal_id"></select>
+        </div>
+        <div>
+          <label class="form-label" for="fVeterinario">Veterinario</label>
+          <select class="form-select" id="fVeterinario" name="veterinario_id"></select>
+        </div>
+        <div>
+          <label class="form-label" for="fTipo">Tipo</label>
+          <select class="form-select" id="fTipo" name="tipo"></select>
+        </div>
+      </form>
+      <div class="table-responsive">
+        <table class="table table-hover tabla-zoo">
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Animal</th>
+              <th>Tipo</th>
+              <th>Motivo y diagnóstico</th>
+              <th>Resultado</th>
+              <th>Veterinario</th>
+              <th class="text-end">Detalle</th>
+            </tr>
+          </thead>
+          <tbody id="tabla"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <!-- Detalle -->
+  <div class="modal fade" id="modalDetalle" tabindex="-1" aria-labelledby="tituloDetalle" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="tituloDetalle">Consulta</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body" id="cuerpoDetalle"></div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Nueva consulta -->
+  <div class="modal fade" id="modalConsulta" tabindex="-1" aria-labelledby="tituloConsulta" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-fullscreen-lg-down modal-dialog-scrollable">
+      <form class="modal-content" id="formConsulta" novalidate>
+        <div class="modal-header">
+          <h5 class="modal-title" id="tituloConsulta">Nueva consulta</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <div class="alert alert-danger d-none" data-error-general role="alert"></div>
+          <div class="row g-3">
+            <div class="col-md-5">
+              <label class="form-label" for="cAnimal">Animal</label>
+              <select class="form-select" id="cAnimal" name="animal_id" required></select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label" for="cFecha">Fecha y hora</label>
+              <input class="form-control" type="datetime-local" id="cFecha" name="fecha" required>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label" for="cTipo">Tipo</label>
+              <select class="form-select" id="cTipo" name="tipo" required></select>
+            </div>
+            <div class="col-md-8">
+              <label class="form-label" for="cMotivo">Motivo de la consulta</label>
+              <input class="form-control" id="cMotivo" name="motivo" maxlength="255" required>
+            </div>
+            <div class="col-6 col-md-2">
+              <label class="form-label" for="cPeso">Peso (kg)</label>
+              <input class="form-control" type="number" id="cPeso" name="peso_kg" min="0.01" step="0.01">
+            </div>
+            <div class="col-6 col-md-2">
+              <label class="form-label" for="cTemp">Temp. (°C)</label>
+              <input class="form-control" type="number" id="cTemp" name="temperatura_c" min="10" max="50" step="0.1">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label" for="cSintomas">Síntomas</label>
+              <textarea class="form-control" id="cSintomas" name="sintomas" rows="3" maxlength="2000"></textarea>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label" for="cDiagnostico">Diagnóstico</label>
+              <textarea class="form-control" id="cDiagnostico" name="diagnostico" rows="3" maxlength="2000"></textarea>
+            </div>
+            <div class="col-12">
+              <label class="form-label" for="cTratamiento">Tratamiento indicado</label>
+              <textarea class="form-control" id="cTratamiento" name="tratamiento" rows="2" maxlength="2000"></textarea>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label" for="cEstado">Estado de salud resultante</label>
+              <select class="form-select" id="cEstado" name="estado_salud_resultante" required></select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label" for="cRevision">Próxima revisión</label>
+              <input class="form-control" type="date" id="cRevision" name="proxima_revision">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label" for="cObservaciones">Observaciones</label>
+              <input class="form-control" id="cObservaciones" name="observaciones" maxlength="2000">
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-between align-items-center mt-4 mb-2">
+            <h6 class="titulo mb-0">Medicamentos, vacunas o vitaminas aplicados</h6>
+            <button class="btn btn-sm btn-outline-primary" type="button" id="btnAgregarAplicacion"><i class="bi bi-plus-lg me-1"></i>Agregar</button>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-sm align-middle mb-0">
+              <thead>
+                <tr class="small text-secondary"><th>Producto</th><th style="width: 9rem">Dosis</th><th style="width: 10rem">Vía</th><th style="width: 10rem">Próxima dosis</th><th></th></tr>
+              </thead>
+              <tbody id="filasAplicacion"></tbody>
+            </table>
+          </div>
+          <p class="form-text" id="sinAplicaciones">No se ha agregado ninguno. Lo aplicado se descuenta del inventario clínico.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Guardar consulta</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js" defer></script>
+  <script src="/assets/js/core/api.js" defer></script>
+  <script src="/assets/js/core/ui.js" defer></script>
+  <script src="/assets/js/core/etiquetas.js" defer></script>
+  <script src="/assets/js/core/crud.js" defer></script>
+  <script src="/assets/js/core/layout.js" defer></script>
+  <script src="/assets/js/modulos/clinico/etiquetas.js" defer></script>
+  <script src="/assets/js/modulos/clinico/comun.js" defer></script>
+  <script src="/assets/js/modulos/clinico/consultas.js" defer></script>
+</body>
+</html>
